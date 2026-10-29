@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "scannedAt": "2026-01-01T09:00:00.000Z",
+  "os": {
+    "name": "windows",
+    "version": "10.0.19045",
+    "arch": "x64"
+  },
+  "cpu": {
+    "name": "Intel Core i3-1115G4",
+    "cores": 2,
+    "threads": 4
+  },
+  "ramGb": {
+    "total": 8,
+    "free": 5
+  },
+  "gpus": [
+    {
+      "name": "Intel UHD Graphics",
+      "vendor": "intel",
+      "discrete": false,
+      "vramGb": null,
+      "vramSource": "mock"
+    }
+  ],
+  "diskFreeGb": 22,
+  "ollama": {
+    "installed": false,
+    "version": null,
+    "running": false,
+    "models": []
+  },
+  "tools": {
+    "winget": true,
+    "tailscale": false,
+    "tailscaleServe": "none"
+  },
+  "isAdmin": false,
+  "internet": true,
+  "vramOverrideGb": null
+}

@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "permissions": {
+    "allow": [
+      "Bash(npm test)",
+      "Bash(npm test *)",
+      "Bash(npm run test *)",
+      "Bash(npm run typecheck)",
+      "Bash(npm run lint)",
+      "Bash(npm run build)",
+      "Bash(npm ls *)",
+      "Bash(npx vitest run *)",
+      "Bash(npx tsc --noEmit *)",
+      "Bash(node --version)",
+      "Bash(git status)",
+      "Bash(git status *)",
+      "Bash(git diff)",
+      "Bash(git diff *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "PowerShell(npm test)",
+      "PowerShell(npm test *)",
+      "PowerShell(npm run test *)",
+      "PowerShell(npm run typecheck)",
+      "PowerShell(npx vitest run *)",
+      "PowerShell(git status *)",
+      "PowerShell(git diff *)",
+      "PowerShell(git log *)"
+    ],
+    "ask": [
+      "Bash(npm install *)",
+      "Bash(npm run dev *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "PowerShell(npm install *)",
+      "PowerShell(git commit *)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Bash(rm -r *)",
+      "Bash(rmdir *)",
+      "Bash(del *)",
+      "Bash(git push *)",
+      "Bash(git reset --hard *)",
+      "Bash(git clean *)",
+      "Bash(git checkout -- *)",
+      "Bash(npm publish *)",
+      "Bash(winget *)",
+      "Bash(ollama pull *)",
+      "Bash(ollama rm *)",
+      "Bash(tailscale *)",
+      "Bash(setx *)",
+      "Bash(reg *)",
+      "Bash(curl *)",
+      "Bash(wget *)",
+      "Bash(shutdown *)",
+      "PowerShell(Remove-Item *)",
+      "PowerShell(Clear-Content *)",
+      "PowerShell(Format-Volume *)",
+      "PowerShell(Stop-Computer *)",
+      "PowerShell(Set-ItemProperty *)",
+      "PowerShell(Invoke-WebRequest *)",
+      "PowerShell(Invoke-Expression *)",
+      "PowerShell(winget *)",
+      "PowerShell(ollama pull *)",
+      "PowerShell(ollama rm *)",
+      "PowerShell(tailscale *)",
+      "PowerShell(setx *)",
+      "PowerShell(git push *)",
+      "PowerShell(git reset --hard *)",
+      "PowerShell(git clean *)",
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(~/.ssh/**)",
+      "Edit(~/.ssh/**)",
+      "Edit(~/.config/**)",
+      "Edit(~/.setuppilot/**)"
+    ],
+    "blockReadsOutsideWorkingDirectories": true
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": ["${CLAUDE_PROJECT_DIR}/.claude/hooks/test-core.mjs"],
+            "timeout": 120
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "terms": {
+    "AI model": "The 'brain' file the AI uses to understand and answer you. Bigger ones are smarter but need more memory.",
+    "local": "Runs on your own PC. Your words are not sent to any company.",
+    "GPU": "A graphics card. It can run AI much faster than the main processor.",
+    "VRAM": "The graphics card's own memory. More of it lets you run a bigger, smarter AI quickly.",
+    "RAM": "Your PC's short-term memory. The AI must fit in it (or in VRAM) while it works.",
+    "CPU": "The main processor in your PC. It can run AI too, just more slowly than a graphics card.",
+    "disk space": "Storage on your PC where files are kept. The AI model is saved here once.",
+    "parameters": "A rough measure of an AI's size, like '7B' for 7 billion. More usually means smarter and slower.",
+    "quantization": "Shrinking an AI model so it fits on normal PCs, with a small loss in quality.",
+    "Q4": "A common shrunk size for AI models. About a quarter of the original, still good quality.",
+    "context": "How much text the AI can keep in mind at once, like the length of its short-term memory.",
+    "token": "A small piece of a word. AI reads and writes in tokens; about 3 tokens make 2 words.",
+    "tokens per second": "How fast the AI writes. About 5 feels slow, 20 or more feels quick.",
+    "Ollama": "A free program that runs AI models on your PC. SetupPilot installs it for you.",
+    "llama.cpp": "Another free program for running AI models. Used only for the optional speed boost.",
+    "API": "A way for programs to talk to each other. Your coding tool uses it to reach the AI.",
+    "localhost": "An address that means 'this PC'. Only programs on your own PC can use it.",
+    "Tailscale": "A free app that makes a private network between your own devices, so they can reach each other safely.",
+    "winget": "Windows' built-in app installer. SetupPilot uses it to install programs safely.",
+    "admin rights": "Permission to install programs on this PC. Windows asks you to confirm.",
+    "speculative decoding": "A trick where a small AI guesses ahead and a bigger AI checks, so answers come faster.",
+    "estimate": "Our best guess before testing. The real number is measured after the test run.",
+    "manifest": "SetupPilot's list of everything it changed, so it can undo all of it later.",
+    "coding tool": "A program that helps you write code, like an AI pair programmer."
+  }
+}

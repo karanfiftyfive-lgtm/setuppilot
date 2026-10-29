@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "scannedAt": "2026-03-01T09:00:00.000Z",
+  "os": {
+    "name": "windows",
+    "version": "10.0.26100",
+    "arch": "x64"
+  },
+  "cpu": {
+    "name": "AMD Ryzen 5 5600G",
+    "cores": 6,
+    "threads": 12
+  },
+  "ramGb": {
+    "total": 32,
+    "free": 26
+  },
+  "gpus": [
+    {
+      "name": "AMD Radeon Graphics",
+      "vendor": "amd",
+      "discrete": false,
+      "vramGb": null,
+      "vramSource": "mock"
+    },
+    {
+      "name": "NVIDIA GeForce RTX 3060",
+      "vendor": "nvidia",
+      "discrete": true,
+      "vramGb": 12,
+      "vramSource": "mock"
+    }
+  ],
+  "diskFreeGb": 170,
+  "ollama": {
+    "installed": true,
+    "version": "0.6.0",
+    "running": true,
+    "models": [
+      "qwen2.5-coder:7b"
+    ]
+  },
+  "tools": {
+    "winget": true,
+    "tailscale": false,
+    "tailscaleServe": "none"
+  },
+  "isAdmin": true,
+  "internet": true,
+  "vramOverrideGb": null
+}

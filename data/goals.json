@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "_note": "Order matters: steps run top to bottom. Skip rules in core/steps.ts may mark a step as not needed (e.g. speed-boost without a discrete GPU).",
+  "goals": [
+    {
+      "id": "chat",
+      "label": "Chat and write (private, free)",
+      "description": "Ask questions, write emails and summaries. Nothing leaves your PC.",
+      "modelUse": "chat",
+      "stepIds": [
+        "scan-pc",
+        "choose-model",
+        "install-runtime",
+        "download-model",
+        "safe-defaults",
+        "speed-boost",
+        "test-run"
+      ]
+    },
+    {
+      "id": "code",
+      "label": "Help me code",
+      "description": "Get help writing and fixing code, connected to a coding tool.",
+      "modelUse": "code",
+      "stepIds": [
+        "scan-pc",
+        "choose-model",
+        "install-runtime",
+        "download-model",
+        "safe-defaults",
+        "speed-boost",
+        "connect-coding-tool",
+        "workflow-rules",
+        "test-run"
+      ]
+    },
+    {
+      "id": "remote",
+      "label": "Use it from my other devices",
+      "description": "Reach your private AI from your phone or laptop, only through your own private network.",
+      "modelUse": "chat",
+      "stepIds": [
+        "scan-pc",
+        "choose-model",
+        "install-runtime",
+        "download-model",
+        "safe-defaults",
+        "speed-boost",
+        "remote-access",
+        "test-run"
+      ]
+    },
+    {
+      "id": "everything",
+      "label": "Everything",
+      "description": "Chat, coding help and access from your other devices.",
+      "modelUse": "any",
+      "stepIds": [
+        "scan-pc",
+        "choose-model",
+        "install-runtime",
+        "download-model",
+        "safe-defaults",
+        "speed-boost",
+        "remote-access",
+        "connect-coding-tool",
+        "workflow-rules",
+        "test-run"
+      ]
+    }
+  ]
+}

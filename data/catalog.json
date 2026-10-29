@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "_note": "All sizes are ESTIMATES of the default Q4 download from the Ollama library, rounded to 0.1 GB. minMemoryGb = q4SizeGb + overheadGb, rounded up to 0.5. Re-verify tags and sizes before the demo. Speed labels are rough estimates, not benchmarks.",
+  "overheadGb": 1.5,
+  "safetyMarginGb": 0.5,
+  "ramUsableFraction": 0.65,
+  "diskReserveGb": 2,
+  "runtimeDiskGb": 1,
+  "speedBoostMinSpareVramGb": 2,
+  "assumedDownloadMbps": 50,
+  "tiers": [
+    { "id": "1b",  "label": "Tiny and quick",   "speedLabel": { "gpu": "fast", "cpu": "fast" }, "gainNote": "Short answers and simple rewording. Good enough to try local AI." },
+    { "id": "3b",  "label": "Small helper",     "speedLabel": { "gpu": "fast", "cpu": "okay" }, "gainNote": "Better at following instructions and writing short texts." },
+    { "id": "8b",  "label": "Everyday helper",  "speedLabel": { "gpu": "fast", "cpu": "slow" }, "gainNote": "Noticeably smarter: longer writing, simple code, better summaries." },
+    { "id": "14b", "label": "Strong helper",    "speedLabel": { "gpu": "okay", "cpu": "slow" }, "gainNote": "Fewer mistakes, better reasoning and code. Still smaller than ChatGPT." },
+    { "id": "27b", "label": "Best on this list", "speedLabel": { "gpu": "okay", "cpu": "slow" }, "gainNote": "The most capable model here. Needs a strong graphics card." }
+  ],
+  "models": [
+    {
+      "id": "gemma3-1b", "displayName": "Gemma 3 (1B)", "ollamaTag": "gemma3:1b", "parametersB": 1, "tier": "1b",
+      "q4SizeGb": 0.8, "minMemoryGb": 2.5, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [2048, 4096, 8192], "defaultContext": 4096,
+      "goals": ["chat"], "roles": ["narrator"], "requiresDiscreteGpu": false,
+      "qualityNote": "Like a quick note-taker: fine for simple questions, often wrong on facts.",
+      "license": "Gemma Terms of Use"
+    },
+    {
+      "id": "llama3.2-1b", "displayName": "Llama 3.2 (1B)", "ollamaTag": "llama3.2:1b", "parametersB": 1, "tier": "1b",
+      "q4SizeGb": 1.3, "minMemoryGb": 3.0, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [2048, 4096, 8192], "defaultContext": 4096,
+      "goals": ["chat"], "roles": ["narrator"], "requiresDiscreteGpu": false,
+      "qualityNote": "Good at rewording text simply. Not reliable for facts or code.",
+      "license": "Llama 3.2 Community License"
+    },
+    {
+      "id": "llama3.2-3b", "displayName": "Llama 3.2 (3B)", "ollamaTag": "llama3.2:3b", "parametersB": 3, "tier": "3b",
+      "q4SizeGb": 2.0, "minMemoryGb": 3.5, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [2048, 4096, 8192], "defaultContext": 4096,
+      "goals": ["chat"], "roles": ["narrator"], "requiresDiscreteGpu": false,
+      "qualityNote": "A helpful assistant for emails, summaries and simple questions.",
+      "license": "Llama 3.2 Community License"
+    },
+    {
+      "id": "qwen3-4b", "displayName": "Qwen 3 (4B)", "ollamaTag": "qwen3:4b", "parametersB": 4, "tier": "3b",
+      "q4SizeGb": 2.5, "minMemoryGb": 4.0, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [2048, 4096, 8192], "defaultContext": 4096,
+      "goals": ["chat", "code"], "requiresDiscreteGpu": false,
+      "qualityNote": "Small but can help with simple code and step-by-step answers.",
+      "license": "Apache 2.0"
+    },
+    {
+      "id": "qwen2.5-7b", "displayName": "Qwen 2.5 (7B)", "ollamaTag": "qwen2.5:7b", "parametersB": 7, "tier": "8b",
+      "q4SizeGb": 4.7, "minMemoryGb": 6.5, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [4096, 8192, 16384], "defaultContext": 8192,
+      "goals": ["chat"], "requiresDiscreteGpu": false,
+      "qualityNote": "A solid everyday assistant for writing, summaries and questions.",
+      "license": "Apache 2.0"
+    },
+    {
+      "id": "qwen2.5-coder-7b", "displayName": "Qwen 2.5 Coder (7B)", "ollamaTag": "qwen2.5-coder:7b", "parametersB": 7, "tier": "8b",
+      "q4SizeGb": 4.7, "minMemoryGb": 6.5, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [4096, 8192, 16384], "defaultContext": 8192,
+      "goals": ["code"], "requiresDiscreteGpu": false,
+      "qualityNote": "Trained for code: explains, writes and fixes small pieces of code.",
+      "license": "Apache 2.0"
+    },
+    {
+      "id": "llama3.1-8b", "displayName": "Llama 3.1 (8B)", "ollamaTag": "llama3.1:8b", "parametersB": 8, "tier": "8b",
+      "q4SizeGb": 4.9, "minMemoryGb": 6.5, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [4096, 8192, 16384], "defaultContext": 8192,
+      "goals": ["chat"], "requiresDiscreteGpu": false,
+      "qualityNote": "A well-known all-rounder for chat and writing.",
+      "license": "Llama 3.1 Community License"
+    },
+    {
+      "id": "qwen2.5-coder-14b", "displayName": "Qwen 2.5 Coder (14B)", "ollamaTag": "qwen2.5-coder:14b", "parametersB": 14, "tier": "14b",
+      "q4SizeGb": 9.0, "minMemoryGb": 10.5, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [4096, 8192, 16384, 32768], "defaultContext": 8192,
+      "goals": ["code"], "requiresDiscreteGpu": false,
+      "qualityNote": "A capable coding helper for real projects. Check its work.",
+      "license": "Apache 2.0"
+    },
+    {
+      "id": "phi4-14b", "displayName": "Phi-4 (14B)", "ollamaTag": "phi4:14b", "parametersB": 14, "tier": "14b",
+      "q4SizeGb": 9.1, "minMemoryGb": 11.0, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [4096, 8192, 16384], "defaultContext": 8192,
+      "goals": ["chat"], "requiresDiscreteGpu": false,
+      "qualityNote": "Good at reasoning and careful answers for its size.",
+      "license": "MIT"
+    },
+    {
+      "id": "gemma3-27b", "displayName": "Gemma 3 (27B)", "ollamaTag": "gemma3:27b", "parametersB": 27, "tier": "27b",
+      "q4SizeGb": 17.0, "minMemoryGb": 18.5, "sizeIsEstimate": true, "verified": false,
+      "contextOptions": [4096, 8192, 16384, 32768], "defaultContext": 8192,
+      "goals": ["chat", "code"], "requiresDiscreteGpu": true,
+      "qualityNote": "The strongest model here for writing and reasoning. Needs a big graphics card.",
+      "license": "Gemma Terms of Use"
+    }
+  ]
+}

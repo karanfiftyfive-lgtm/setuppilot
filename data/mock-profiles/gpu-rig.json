@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "scannedAt": "2026-01-01T09:00:00.000Z",
+  "os": {
+    "name": "windows",
+    "version": "10.0.26100",
+    "arch": "x64"
+  },
+  "cpu": {
+    "name": "AMD Ryzen 7 7700X",
+    "cores": 8,
+    "threads": 16
+  },
+  "ramGb": {
+    "total": 32,
+    "free": 24
+  },
+  "gpus": [
+    {
+      "name": "NVIDIA GeForce RTX 4070",
+      "vendor": "nvidia",
+      "discrete": true,
+      "vramGb": 12,
+      "vramSource": "mock"
+    }
+  ],
+  "diskFreeGb": 650,
+  "ollama": {
+    "installed": true,
+    "version": "0.6.0",
+    "running": true,
+    "models": []
+  },
+  "tools": {
+    "winget": true,
+    "tailscale": true,
+    "tailscaleServe": "none"
+  },
+  "isAdmin": true,
+  "internet": true,
+  "vramOverrideGb": null
+}

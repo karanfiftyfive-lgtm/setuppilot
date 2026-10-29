@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "scannedAt": "2026-01-01T09:00:00.000Z",
+  "os": {
+    "name": "windows",
+    "version": "10.0.26100",
+    "arch": "x64"
+  },
+  "cpu": {
+    "name": "AMD Ryzen 9 7950X",
+    "cores": 16,
+    "threads": 32
+  },
+  "ramGb": {
+    "total": 64,
+    "free": 48
+  },
+  "gpus": [
+    {
+      "name": "NVIDIA GeForce RTX 4090",
+      "vendor": "nvidia",
+      "discrete": true,
+      "vramGb": 24,
+      "vramSource": "mock"
+    }
+  ],
+  "diskFreeGb": 1200,
+  "ollama": {
+    "installed": true,
+    "version": "0.6.0",
+    "running": true,
+    "models": []
+  },
+  "tools": {
+    "winget": true,
+    "tailscale": true,
+    "tailscaleServe": "none"
+  },
+  "isAdmin": true,
+  "internet": true,
+  "vramOverrideGb": null
+}

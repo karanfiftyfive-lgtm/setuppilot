@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "scannedAt": "2026-01-01T09:00:00.000Z",
+  "os": {
+    "name": "windows",
+    "version": "10.0.26100",
+    "arch": "x64"
+  },
+  "cpu": {
+    "name": "AMD Ryzen 5 5600G",
+    "cores": 6,
+    "threads": 12
+  },
+  "ramGb": {
+    "total": 16,
+    "free": 11
+  },
+  "gpus": [
+    {
+      "name": "AMD Radeon Graphics",
+      "vendor": "amd",
+      "discrete": false,
+      "vramGb": null,
+      "vramSource": "mock"
+    }
+  ],
+  "diskFreeGb": 180,
+  "ollama": {
+    "installed": false,
+    "version": null,
+    "running": false,
+    "models": []
+  },
+  "tools": {
+    "winget": true,
+    "tailscale": false,
+    "tailscaleServe": "none"
+  },
+  "isAdmin": true,
+  "internet": true,
+  "vramOverrideGb": null
+}

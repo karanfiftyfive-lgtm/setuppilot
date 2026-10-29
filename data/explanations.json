@@ -1,0 +1,169 @@
+{
+  "schemaVersion": 1,
+  "_note": "Static text shown on step cards. The optional narrator may rephrase it but never changes facts. {model}, {sizeGb}, {context} are filled by core.",
+  "steps": {
+    "scan-pc": {
+      "what": "Checking what your PC can do.",
+      "why": "So I pick an AI that runs well here, not one that freezes your PC.",
+      "changes": "Nothing. I only look.",
+      "requiredReason": "I need this to choose the right AI for your PC.",
+      "osPromptWarning": false
+    },
+    "choose-model": {
+      "what": "Choosing the best AI model that fits your PC: {model}.",
+      "why": "A model that is too big runs very slowly. Too small gives weaker answers.",
+      "changes": "Nothing yet. You can see why I chose it.",
+      "requiredReason": "An AI model is needed to answer you.",
+      "osPromptWarning": false
+    },
+    "install-runtime": {
+      "what": "Installing Ollama, the free program that runs the AI.",
+      "why": "The AI model needs a program to run it, like a music file needs a player.",
+      "changes": "Adds one program (Ollama), about 1 GB of disk (estimate). You can remove it later.",
+      "requiredReason": "Without Ollama the AI cannot run.",
+      "notNeeded": "Ollama is already installed. I will use it as it is.",
+      "osPromptWarning": true
+    },
+    "download-model": {
+      "what": "Downloading the AI model {model}.",
+      "why": "This is the AI itself. After this, it works without internet.",
+      "changes": "Uses about {sizeGb} GB of disk (estimate). Removable later.",
+      "requiredReason": "The AI model is what answers your questions.",
+      "notNeeded": "This model is already on your PC.",
+      "osPromptWarning": false
+    },
+    "safe-defaults": {
+      "what": "Setting safe settings for your PC's memory.",
+      "why": "So the AI remembers enough of the conversation ({context} tokens) without running out of memory.",
+      "changes": "Saves one Ollama setting. The old value is kept so it can be restored.",
+      "requiredReason": "Wrong settings can make the AI slow or crash.",
+      "osPromptWarning": false
+    },
+    "speed-boost": {
+      "what": "Optional speed boost: a small helper AI guesses ahead, and your main AI checks its guesses.",
+      "why": "Answers can come faster. It needs spare graphics memory, and your graphics card has some left over.",
+      "changes": "Adds one program, llama.cpp (about 1 GB, estimate). Advanced and optional.",
+      "notNeeded": "Your PC doesn't need this. It only helps on a PC with a separate graphics card.",
+      "notNeededFull": "Not offered: your graphics card's memory is already used by the AI model, so there is no spare room for the helper.",
+      "osPromptWarning": false,
+      "disabled": "Not available yet in this version: the speed boost install hasn't been checked on a real PC, so I won't run it. Your AI still works on this PC without it."
+    },
+    "remote-access": {
+      "what": "Installing Tailscale so your other devices can reach this AI.",
+      "why": "It creates a private network between only your own devices. Nothing is opened to the internet.",
+      "changes": "Adds one program (Tailscale). You will sign in to your own free account. Removable later.",
+      "signInNote": "A Tailscale window will open. Sign in with your own account. I never see your password.",
+      "osPromptWarning": true,
+      "refused": "I won't set this up: something on this PC already uses Tailscale sharing, and changing it could break it.",
+      "disabled": "Not available yet in this version: the sharing commands haven't been checked on a real PC, so I won't run them. Your AI still works on this PC."
+    },
+    "connect-coding-tool": {
+      "what": "Connecting your coding tool to this AI.",
+      "why": "So your coding tool uses your private AI instead of a paid online one.",
+      "changes": "Writes one settings file for the coding tool. Any old file is backed up first.",
+      "osPromptWarning": false
+    },
+    "workflow-rules": {
+      "what": "Offering a ready-made rules file for coding projects (optional).",
+      "why": "It reminds the AI to plan, build, then check its work. Helpful, not required.",
+      "changes": "Saves one text file only if you choose a folder for it.",
+      "osPromptWarning": false
+    },
+    "test-run": {
+      "what": "Sending a real test question to your new AI.",
+      "why": "To prove it works and measure its real speed on your PC.",
+      "changes": "Nothing. Just one question and answer.",
+      "requiredReason": "This checks that everything works.",
+      "osPromptWarning": false
+    }
+  },
+  "errors": {
+    "NO_INTERNET": {
+      "title": "No internet connection",
+      "help": "I need internet only for downloads. Check your Wi-Fi, then press Retry."
+    },
+    "NO_WINGET": {
+      "title": "Windows app installer is missing",
+      "help": "Open the Microsoft Store and update 'App Installer', then press Retry."
+    },
+    "NO_ADMIN": {
+      "title": "Permission needed",
+      "help": "This step needs permission to install a program. Click Yes when Windows asks, or ask the PC's owner."
+    },
+    "LOW_DISK": {
+      "title": "Your disk is almost full",
+      "help": "I need about {needGb} GB free (estimate). Delete or move some files, then press Retry."
+    },
+    "DOWNLOAD_INTERRUPTED": {
+      "title": "The download stopped",
+      "help": "Your connection dropped. Press Retry. It continues where it stopped."
+    },
+    "OLLAMA_NOT_RUNNING": {
+      "title": "The AI program is not running",
+      "help": "Press Retry and I will start it again."
+    },
+    "COMMAND_FAILED": {
+      "title": "Something didn't work",
+      "help": "This step failed. Press Retry. 'Show technical details' has the full log."
+    },
+    "TIMEOUT": {
+      "title": "This is taking too long",
+      "help": "Your PC or connection may be busy. Press Retry."
+    },
+    "NOT_APPROVED": {
+      "title": "Waiting for your OK",
+      "help": "Nothing runs until you approve it."
+    },
+    "SHARING_IN_USE": {
+      "title": "Sharing is already in use",
+      "help": "Something on this PC already uses Tailscale sharing. I left it alone. You can still use your AI on this PC."
+    }
+  },
+  "tips": {
+    "closePrograms": "Other programs are using {inUseGb} GB of memory right now. Closing some of them frees memory for the AI.",
+    "addRam": "More memory (RAM) lets you run a bigger AI. You would need about {needGb} GB free (estimate).",
+    "addGpu": "A graphics card with about {needGb} GB of its own memory (estimate) would let you run {model}.",
+    "remoteMachine": "If you have a stronger computer, SetupPilot can connect to it through your own private network."
+  },
+  "weakPc": {
+    "title": "Your PC can run a small AI",
+    "body": "It will be quick but simpler than ChatGPT. You can also connect to a stronger computer you own, or see upgrade tips later."
+  },
+  "labels": {
+    "demo": "Demo mode: simulated"
+  },
+  "toolConfig": {
+    "_note": "contextNote numbers: toolContext comes from TOOL_USE_MIN_CONTEXT in core/toolconfig.ts (cited there); context is the plan's value.",
+    "contextNote": "Coding tools work best with a bigger conversation memory (context). Ollama's guides for these tools recommend at least {toolContext} tokens; this PC is set to {context}. So letting the AI read and change files by itself (tool use) may not work well on this PC.",
+    "providerName": "Ollama on this PC (set up by SetupPilot)",
+    "claudeCodeHeader": [
+      "# Use your local AI in Claude Code, in this PowerShell window only.",
+      "# Closing this window puts Claude Code back to normal. Nothing on this PC is changed."
+    ],
+    "rulesFile": [
+      "# How the AI should work in this project",
+      "",
+      "<!-- Added by SetupPilot. Optional: edit it to suit you, or delete it. -->",
+      "",
+      "These are suggestions, not requirements. Change anything you like.",
+      "",
+      "## 1. Plan first",
+      "- Before changing code, write a short plan: what will change, in which files, and why.",
+      "- If the task is unclear, ask one question instead of guessing.",
+      "- Wait for my OK on the plan before starting.",
+      "",
+      "## 2. Build in small steps",
+      "- Change one thing at a time, small enough to review.",
+      "- Ask before deleting files or running commands that change this computer.",
+      "",
+      "## 3. Check the work",
+      "- After each change, run the project's tests, or say how to check it by hand.",
+      "- Show what you ran and what happened. If something failed, say so plainly.",
+      "- Don't say something works until it has been checked.",
+      "",
+      "## Notes",
+      "- Claude Code reads this file because it is named CLAUDE.md. Other tools may ignore it.",
+      "- A small local AI can miss instructions. Keep tasks short and check its answers."
+    ]
+  }
+}
