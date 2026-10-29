@@ -190,6 +190,33 @@ Must be done in Phase 2; none can delete user data or run an unapproved command 
 - **D40. The startup check fails closed with a plain message** ("SetupPilot can't start:
   ...") when roots overlap or are unsafe, the models drive is missing, or the logs/backups
   folder can't be created. It creates only SetupPilot's own folders inside the data folder.
+- **D47. Run log (T7, `server/log.ts` + `server/log/{entry,clean,files}.ts`).** Human decisions:
+  1. **No file is ever deleted.** Caps instead: 8 KiB per entry (the line is cut to fit),
+     5 MiB per file with rotation `.1` to `.9` per day, 100 MiB for all log files together;
+     past a cap, entries are dropped and reported once. The log's fs interface has no delete,
+     move or shorten call, and a test scans the log sources for any (mutation: adds `unlink`).
+  2. **File names use the UTC date** (not local time), computed from the injected clock with
+     plain arithmetic; 23:59:59 and 00:00:00 UTC land in different files (tested).
+  3. **Login links**: any `http(s)://` token containing "tailscale" (any case) is replaced
+     whole by "[login link removed]", including look-alikes such as
+     `https://login.tailscale.com.evil.example/...` and URLs that also carry credentials. Plus
+     fail-safe rules for a link cut by the end of the line (a prefix of
+     `http(s)://login.tailscale.com/`) and for the second half of a link split across lines
+     (no scheme, contains "tailscale" or `/a/<8+ hex>`). Shown to the user, never logged.
+  4. **Credentials in URLs**, fail safe: when ":" comes before "@" in a token (scheme
+     optional), everything up to the LAST "@" is replaced, so a password containing @ : / is
+     removed whole; a plain line (no ":" before an "@") is unchanged. A password containing a
+     space can't be recognised (a known limit).
+  5. **`command` field**: the logger re-verifies the RenderedCommand and logs only its display
+     string. A rejected entry never throws: it is dropped, one fixed marker line is written
+     (`{"event":"log.rejected","note":"a log entry was rejected"}`, none of its data), counted,
+     and reported once.
+  Also: structured entries only (type-level, with `@ts-expect-error` tests, and a runtime
+  guard); control, bidi and separator characters become a space; one write queue (tested: no
+  overlapping appends); failures never reach the caller and are reported once per streak;
+  `tail(n)` (n <= 500) has no path parameter; the path is checked in two independent layers
+  (strict file-name pattern, then the resolved path must be a direct child of the logs folder,
+  each tested on its own) and the logs folder must not be a link elsewhere.
 - **D46. Executor (T6): verified command in, nothing else.** `run(cmd, onLine, signal)`; the
   exe path (confirmed candidates only), timeout, output policy and env come from core and
   config, never from a caller; no request carries a pid. Only `server/executor/real.ts`
@@ -273,11 +300,20 @@ Must be done in Phase 2; none can delete user data or run an unapproved command 
   manifest, or any error message or `detail` text (including a failure/timeout message). The
   only consumer is the in-memory parser. Plus a mutation check that removes that guard and
   shows these tests fail. **T6 done for the executor side** (PrivateText; result and details
-  never carry output; t6 mutations). Still owed: the log (T7), event stream (T15) and stored
-  manifest (T8) each get a "private output never reaches me" test.
-- **T7 log / T8 manifest-store / T15 events: proxy credentials** (D46): a proxy value with a
-  user name and password (in the child env) never appears in the log file, the event stream
-  or the stored manifest; same marker test as `tests/executor-env.test.ts`.
+  never carry output; t6 mutations). **T7 log done** (private lines are dropped by
+  `outputEntry`, the guard rejects PrivateText; end-to-end test through the fake executor; t7
+  "private line logged" mutation). Still owed: the event stream (T15) and the stored manifest
+  (T8) each get a "private output never reaches me" test.
+- **T8 manifest-store / T15 events: proxy credentials** (D46): a proxy value with a user name
+  and password (in the child env) never appears in the event stream or the stored manifest;
+  same marker test as `tests/executor-env.test.ts`. **T7 log: done** (`tests/log-e2e.test.ts`:
+  secret marker, private lines, proxy password and login token never in any log file).
+- **T12 runner: verification split** (approved after T6): the executor's own verifyRendered
+  checks shape and catalog membership only; the runner must call verifyRendered with the
+  manifest's tags (modelTag, for `ollama.rm`) before handing a stored command to the executor.
+  Test: a catalog tag that is not in the manifest is refused by the runner. The T12 plan must
+  list this. The runner logs only through `logCommandStart` / `loggingOnLine` /
+  `logCommandEnd` (server/log.ts).
 - **T12 runner: the retry-after-partial-install sequence** (D46): reproduce run 1 failed with
   previous "absent" then run 2 done with previous "present", show what uninstall does, and
   stop for the human's decision. Don't weaken "unknown means keep".

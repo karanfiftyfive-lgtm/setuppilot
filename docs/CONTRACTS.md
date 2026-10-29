@@ -528,6 +528,58 @@ interface ExecResult {
 // A non-zero exit may still have changed the PC (e.g. a partial winget install): D46, T12 test.
 ```
 
+## Log (server/log.ts, T7)
+```ts
+// Structured entries only: fixed event names, checked ids, enum values, numbers, booleans.
+// Never a raw ExecResult, ChildEnv, PrivateText, private line or request body (type-level and
+// runtime guard: plain objects with known keys and valid values only; anything else is
+// rejected and counted, never written).
+type LogEvent = "run.start" | "run.end" | "step.start" | "step.end"
+              | "command.start" | "command.end" | "command.output" | "approval";
+interface LogEntry {
+  event: LogEvent;
+  runId?: string;                 // /^[A-Za-z0-9-]{1,64}$/
+  stepId?: StepId;
+  item?: number;                  // uninstall item index
+  command?: RenderedCommand;      // must pass verifyRendered (executor context); logged as display
+  status?: StepStatus;
+  code?: ErrorCode;
+  detail?: ExecDetail;
+  exitCode?: number | null; timedOut?: boolean; cancelled?: boolean; truncated?: boolean;
+  killConfirmed?: boolean | null; spawnError?: ExecResult["spawnError"];
+  line?: string;                  // public output only, cleaned (below)
+}
+// Builders the runner uses (no raw objects pass through): commandStart(runId, stepId, cmd),
+// commandEnd(runId, stepId, cmd, result, outcome) copies named fields only,
+// outputEntry(runId, stepId, line: OutputLine) returns null for a private line (dropped).
+// A rejected entry never throws: it is dropped, one fixed marker line {"event":"log.rejected",
+// "note":"a log entry was rejected"} is written instead (none of the rejected data), it is
+// counted, and reported once (report().rejected).
+// Cleaning of `line`, in this order (server/log/clean.ts):
+//  1. control, bidi and line/paragraph separator characters become a space.
+//  2. tokens = runs of text without whitespace, quotes, backticks or < >; leading ( [ { and
+//     trailing . , ; : ! ? ) ] } are kept outside the token. A token is replaced whole by "[login link removed]"
+//     when: it starts with http(s):// and contains "tailscale" (any case); or it ends the
+//     line and is a prefix of "http(s)://login.tailscale.com/" (a URL cut by the line end); or
+//     it has no scheme and contains "tailscale" or a Tailscale login path "/a/<8+ hex>" (the
+//     second half of a URL split across lines). Shown to the user in the UI, never logged.
+//  3. credentials, fail safe: in any other token (scheme optional), when a ":" comes before an
+//     "@", everything after the scheme up to the LAST "@" becomes "[credentials removed]" (a
+//     password may contain @ : /; when unsure, more is removed, never less).
+// The line is cleaned before any length cut, so a cut can't split a secret out of a URL.
+// File: JSON Lines, one entry per line, `<config.logDir>/<YYYY-MM-DD>[.n].log`. The date in
+// the name is the UTC date (not local time) from an injected clock ("at": ISO UTC time, same
+// clock): 23:59:59 UTC and 00:00:00 UTC land in different files. The resolved path (and its real path)
+// must be a file directly inside the logs folder, else nothing is written.
+// Writes: one serialized queue, one append per complete line. A missing folder is created; any
+// write failure is caught, never thrown to the caller, and reported once per failure streak
+// (onFailure). Caps: 8 KiB per entry (line cut to fit), 5 MiB per file then rotate to .1 .. .9,
+// 100 MiB for all log files together; past that, entries are dropped and reported once. No
+// file is ever deleted.
+// Reads: tail(n) -> the last n entries (n <= 500) across this folder's log files. No path
+// parameter: a request can't pick a file.
+```
+
 ## Re-analyze (core/analyze -> ui)
 ```ts
 interface ProfileChange { field: string; from: string; to: string; text: string } // "RAM 16 -> 32 GB"

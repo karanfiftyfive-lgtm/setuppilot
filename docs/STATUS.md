@@ -1,6 +1,6 @@
 # Status (read this first when resuming)
 
-Last updated: 2026-10-29, second Phase 2 session, after T6 (executor), waiting for the human.
+Last updated: 2026-10-30, second Phase 2 session, after T7 (log), waiting for the human.
 Keep this file current at the end of every task.
 
 ## Session start (if Claude Code is restarted)
@@ -13,9 +13,10 @@ rewritten during the edit); `core/hash.ts` back to its original bytes (sha256 an
 c. All three agents loaded. d. Beginner-reviewer findings -> fixed in T5b. e. 573 tests, tsc
 clean, 29/14/18/27/25. (One edit slip during item b: see AI_USAGE.md.)
 
-## Baseline now (after T6)
-`npm test`: 663 passing. `npx tsc --noEmit --noUnusedLocals`: clean. Mutation checks: Phase 1
-29/29, T2 14/14, T3 18/18, T4 27/27, T5 25/25, T5b 13/13, T5c 11/11, T5d 5/5, T6 31/31. Every script refuses to
+## Baseline now (after T7)
+`npm test`: 760 passing. `npx tsc --noEmit --noUnusedLocals`: clean. Mutation checks: Phase 1
+29/29, T2 14/14, T3 18/18, T4 27/27, T5 25/25, T5b 13/13, T5c 11/11, T5d 5/5, T6 31/31,
+T7 24/24. Every script refuses to
 run if its tests fail on unmutated code. Run long checks in the background and don't edit
 source files while one runs (they edit files temporarily).
 Known flake (DECISIONS open item 3): twice, a hook run after editing
@@ -31,16 +32,15 @@ fix, not confirmed). If you see it, re-run once before acting, and note it (CLAU
   the human; compare with `git diff` before deleting anything); T5b (copy fixes + D43);
   T5c (goal-screen note D44, first-person copy, `.gitattributes`, baseline guard in every
   mutation script); T5d (goal note leads with what's missing, caveat promises nothing, hook
-  realpath, D45); T6 executor (D46). The agent never runs git add / commit. At the end of T6
-  `git log` still shows only the baseline `7ee907b` (the human is committing T5b-T6).
-- **Waiting for the human**: review of T6. Don't start T7 until the human says go.
-- **Next task: T7 `server/log.ts`**, only after the human says go: plan first. Owed there:
-  privateOutput lines and proxy credentials never reach the log file (DECISIONS obligations).
+  realpath, D45); T6 executor (D46, committed by the human as `6374375`); T7 log (D47, not
+  committed yet). The agent never runs git add / commit.
+- **Waiting for the human**: review of T7. Don't start T8 until the human says go.
+- **Next task: T8 `server/manifest-store.ts`**, only after the human says go: plan first.
+  Owed there: privateOutput lines and proxy credentials never reach the stored manifest.
 - **T6 layout**: `server/executor.ts` (createExecutor) and `server/executor/{types,output,
   env,supervise,fake,real}.ts`; `core/outcome.ts` (outcomeFor); `data/demo-output.json`.
-  (Old T6 notes follow.) FakeExecutor (tests + demo), RealExecutor (absolute exe paths only, `shell: false`,
-  constructed only in real mode), how `privateOutput` is enforced, how the own-child PID list
-  is built, timeouts and cancel (`proc.killTree` with the executor's own child pid only).
+- **T7 layout**: `server/log.ts` (Logger, write queue, caps, tail, and the runner helpers
+  `logCommandStart` / `loggingOnLine` / `logCommandEnd`) and `server/log/{entry,clean,files}.ts`.
 
 ## Done
 | Task | What | Tests after | Mutation check |
@@ -56,11 +56,12 @@ fix, not confirmed). If you see it, re-run once before acting, and note it (CLAU
 | T5c | `goalAvailability` (`core/availability.ts`, contract first) + `explanations.goalNote`: real-mode note on "remote"/"everything", not "chat"/"code" (step 7 is `advanced`), never in demo (D44). First-person "not available yet" texts, step 7 subject, "There's nothing to do here."; glossary "token" made accurate; `.gitattributes` (LF, no content change); baseline guard in all mutation scripts. 5 assertions updated (listed to the human first). | 589 | T5c 11/11 (1 missed on first run, fixed) |
 | T5d | Goal note "Not in this version: ... For now, it works on this PC only." (data, runtime-swap test); caveat's "chat still works" removed + no-claim test; hook starts Vitest from realpath (not confirmed); CLAUDE.md rule on failed hook runs. 2 assertions updated (listed first). | 591 | T5d 5/5 |
 | T6 | Executor (D46): contract first; `run(cmd, onLine, signal)` with verified commands only; confirmed exe paths only (all unconfirmed: real mode runs nothing yet); shell off, window hidden; own-child pid set; taskkill on own child, child.kill() only if taskkill is unconfirmed (killConfirmed false); timeout/cancel/5 s wait on an injected clock; output policy log/progress; PrivateText + ChildEnv; env allowlist; spawn-import rule; outcomeFor + fixed details. Fake and real share one supervisor (shared test table). | 663 | T6 31/31 (2 missed on first run, fixed) |
+| T7 | Run log (D47): contract first; structured entries only (type-level `@ts-expect-error` tests + runtime guard; rejected entry = one fixed marker, never a throw); line cleaning (control/bidi neutralised, Tailscale login links removed whole incl. cut and split ones, URL credentials removed to the last @); JSON Lines in `<logDir>/<UTC date>[.n].log` from an injected clock; one write queue; failures reported once, never thrown; caps 8 KiB / 5 MiB with rotation .1-.9 / 100 MiB, no file ever deleted (scanned); two-layer path check + no-link logs folder; `tail(n)` with no path. End-to-end test through the fake executor. | 760 | T7 24/24 (resolved-path layer untested until split out, fixed) |
 
 Phase 1 mutation check: 29/29. All five checks are re-run after each task.
 
 Mutation scripts: `tools/mutation/` (run from `setuppilot/`):
-`node tools/mutation/phase1.cjs .`, `node tools/mutation/t2.cjs`, `t3.cjs`, `t4.cjs`, `t5.cjs`, `t5b.cjs`, `t5c.cjs`, `t5d.cjs`, `t6.cjs`.
+`node tools/mutation/phase1.cjs .`, `node tools/mutation/t2.cjs`, `t3.cjs`, `t4.cjs`, `t5.cjs`, `t5b.cjs`, `t5c.cjs`, `t5d.cjs`, `t6.cjs`, `t7.cjs`.
 Each mutation is one text replacement in one source file; the named test files must fail;
 the file is restored after each run. Add a new script per task (t6.cjs, ...).
 
@@ -74,12 +75,15 @@ show the report -> T19 docs (DEMO_SCRIPT checklist, AI_USAGE results table, DECI
 AI_USAGE incl. own mistakes) -> stop. Don't start Phase 3.
 
 ## Obligations already promised for later tasks
-- **T7 log / T15 events / T8 manifest-store**: `privateOutput` lines AND proxy credentials
-  (child env) never reach the log, the event stream or the stored manifest; one marker test
-  each, plus a mutation removing the guard. (T6 did the executor side: PrivateText, ChildEnv,
-  result and details never carry output.)
-- **T12 runner**: reproduce the retry-after-partial-install sequence (D46) in a test and stop
-  for the human's decision; don't weaken "unknown means keep".
+- **T15 events / T8 manifest-store**: `privateOutput` lines AND proxy credentials (child
+  env) never reach the event stream or the stored manifest; one marker test each, plus a
+  mutation removing the guard. (Done: executor side in T6, log in T7.)
+- **T12 runner**: (a) reproduce the retry-after-partial-install sequence (D46) in a test and
+  stop for the human's decision; don't weaken "unknown means keep". (b) Verification split:
+  the runner calls verifyRendered with the manifest's tags (modelTag) before the executor,
+  which only checks shape and catalog membership; test a catalog tag that isn't in the
+  manifest. (c) Log only through `logCommandStart` / `loggingOnLine` / `logCommandEnd`.
+  The T12 plan must list (a)-(c).
 - **T15**: no request can supply a pid (cancel takes a run id only; T6 executor already takes
   none).
 - **T10**: graphics detection must not assume NVIDIA. AMD/Intel: `vramGb: null`, manual
