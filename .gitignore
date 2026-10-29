@@ -1,2 +1,9 @@
 node_modules/
+ui/dist/
+# Local data (the app writes to ~/.setuppilot, outside the repo; never commit a copy)
+.setuppilot/
+logs/
+.env
+.env.*
+.claude/settings.local.json
 *.log

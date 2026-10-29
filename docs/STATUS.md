@@ -1,6 +1,61 @@
 # Status (read this first when resuming)
 
-Last updated: 2026-10-30, second Phase 2 session, after T7 (log), waiting for the human.
+Last updated: 2026-10-30. Phase 2 stopped after T7 (committed) by the human's decision; a
+demo-only browser UI was built instead (section "Demo UI" below). Waiting for the human.
+
+## Demo UI (ui/, browser only) - done 2026-10-30
+- Run: `npm run demo` (dev) or `npm run demo:build && npm run demo:preview`. No server, no
+  executor, no network, no storage; "Demo mode: simulated" on every screen.
+- Done: 1 Welcome, 2 Goal, 3 Scan (sample PC picker + recommendation), 4 Plan and setup
+  (step cards, technical details, Approve all / Review each step, progress map), 5 Test
+  (simulated answer, "simulated, not measured"), 6 Re-analyze (ladder, tips, rollback).
+- **Coming next (not built):** 7 Uninstall (simulated plan from core/manifest.ts with a demo
+  manifest, fixed order, approval) and 8 Chat (canned, labelled reply).
+- Layout: `ui/src/model/` pure view models (tested), `ui/src/components/`, `ui/src/pages/`,
+  `ui/src/App.tsx`. Tests: `tests/ui-{model,flow,honesty,imports}.test.ts`. Bundle check:
+  `tools/check-ui-bundle.cjs` (runs in `demo:build`).
+- New packages (exact, published 14+ days before 2026-10-30, `--ignore-scripts`): react and
+  react-dom 19.2.9, @types/react and @types/react-dom 19.3.0; vite pinned to the 7.3.7 already
+  installed by vitest. No React plugin: vite's esbuild compiles TSX. `npm audit`: 3 findings
+  (2 critical, 1 moderate), all inside vitest 3.2.7, identical before the install (D29 item).
+- No change to core/, data/ or existing tests. Config changed: root tsconfig `"jsx":
+  "react-jsx"`; package.json scripts and dependencies; README rewritten.
+- Not done: no click-through in a real browser (no headless browser installed); smoke test
+  only (page and bundle return 200, bundle contains the demo label).
+
+## Final polish (2026-10-30)
+- Beginner-reviewer run once on the demo copy. Applied its 8 ui/ must-fixes: Windows-permission
+  text names the real box and says the demo shows none; "Approve all" explained, with how many
+  permission boxes the real app would show; caption "Example of what the real app would show.
+  Nothing ran." above simulated output; plain step names in the progress map; re-analyze
+  headings fixed ("Bigger AIs, and what each one needs", "Ways to get more from your AI");
+  "You would need ..." as a full sentence; the small-PC note starts with its title.
+- Phone/accessibility: long words and code wrap (`overflow-wrap: anywhere`), `pre` scrolls in
+  its own box; goal buttons use `aria-pressed` instead of a radio role without arrow keys.
+- Repo scan for public sharing: no keys, tokens, passwords, personal paths or emails found
+  (only fictional test paths such as C:/Users/kim). `.gitignore` adds local data folders and
+  env files. No LICENSE: the human hasn't chosen one.
+- Facts for the submission form: `docs/SUBMISSION_FACTS.md`.
+
+## Phase 3 copy items (from the review, not applied)
+- data/ must-fix (data frozen): test step says "real test question" / "real speed" (D1); the
+  small-PC body "It will be quick..." is a speed claim without "estimate" (D2).
+- ui/ should-fix: explain "(1B)" model sizes; hints on the test and re-analyze screens;
+  "No change found" next step; clearer rollback sentence; hide the "can't be skipped" note on
+  skipped steps and in Approve-all mode; show the "not in this version" goal note in the demo
+  too; glossary taps on goal descriptions and the welcome text; "unknown GB" phrase in
+  profileSummary (a test pins today's text: change both together).
+- ui/ nits: "Usable, a bit slower"; square-bracket labels; sample PC names; "Waiting for your
+  OK" in Approve-all mode; "computer" vs "PC".
+- core/ strings: "RAM 8 -> 32 GB" vs "memory"; "usable"; "You can enter it by hand" (no field yet).
+- data/ should-fix/nits: demo-output jargon ("pulling manifest", "Successfully installed"),
+  contextNote sentence length, "{context} tokens", coding tool not named, Tailscale account,
+  glossary "context" vs "RAM" images, NO_ADMIN text without Retry, and smaller wording items.
+
+## Not done (Phase 2 server, stopped)
+T8 manifest-store, T9 profile-store, T10 real detection, T11 prerun, T12 runner, T13 Ollama
+HTTP calls, T14 tools-config, T15 HTTP routes and server index, T16-T19. No real detection,
+no real runner, no real Ollama. Real execution stays gated: all exe paths unconfirmed.
 Keep this file current at the end of every task.
 
 ## Session start (if Claude Code is restarted)
@@ -14,7 +69,9 @@ c. All three agents loaded. d. Beginner-reviewer findings -> fixed in T5b. e. 57
 clean, 29/14/18/27/25. (One edit slip during item b: see AI_USAGE.md.)
 
 ## Baseline now (after T7)
-`npm test`: 760 passing. `npx tsc --noEmit --noUnusedLocals`: clean. Mutation checks: Phase 1
+`npm test`: 801 passing (760 + 41 demo UI). `npx tsc --noEmit --noUnusedLocals` and
+`npm run typecheck:ui`: clean. `npm run demo:build`: OK. Mutation checks (last run after T7; not re-run for the demo UI, which
+changed no core/ or server/ file): Phase 1
 29/29, T2 14/14, T3 18/18, T4 27/27, T5 25/25, T5b 13/13, T5c 11/11, T5d 5/5, T6 31/31,
 T7 24/24. Every script refuses to
 run if its tests fail on unmutated code. Run long checks in the background and don't edit

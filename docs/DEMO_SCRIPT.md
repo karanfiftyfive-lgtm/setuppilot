@@ -1,5 +1,26 @@
 # 3-minute demo script
 
+## Current build: browser demo (ui/, no server)
+Start: `npm run demo:build && npm run demo:preview`, open http://127.0.0.1:4173. Works offline.
+
+**Pitch (one sentence):** "SetupPilot sets up a private AI on your own PC for people who know
+nothing about AI: you pick a goal and approve, it does the rest and tells you the truth about
+what your PC can do."
+
+| Time | Screen | Say | Click |
+|---|---|---|---|
+| 0:00 | Welcome | Read the pitch. Point at the honest limit: smaller than ChatGPT or Claude, speed depends on the PC. Point at "Demo mode: simulated". | Start |
+| 0:20 | Goal | "The user only says what they want." | "Chat and write", Next |
+| 0:30 | Your PC | Sample PC "Older laptop": 8 GB memory, built-in graphics. "It picks a small model that runs well here, says why, and the speed is an estimate word, not a made-up number." Tap a dotted word (e.g. "RAM") for its meaning. Point at "What would unlock a bigger AI". | Next |
+| 1:00 | Setup plan | "Every step: what, why, what changes on your PC. Technical details shows the exact command, built from a fixed list, never by an AI." Expand one. "Speed boost: Your PC doesn't need this." | Show technical details, then Approve all |
+| 1:30 | Setup runs | Steps tick to "Done (simulated)" one by one; the progress map uses words and symbols, not just colour. "Required steps can't be skipped; skipped steps always say why." | Next |
+| 1:50 | Test | "The real app measures the speed after setup. Here it says plainly: simulated, not measured." | Ask (simulated), Next |
+| 2:05 | My PC changed | "After an upgrade (RAM 8 to 32 GB, new graphics card), it checks again." Show the ladder: bigger models that fit now, gains labelled estimate, old model kept as rollback. | My PC changed: check again |
+| 2:40 | End | **Safety:** "No AI ever writes a command; commands come from a fixed whitelist; nothing runs without your OK; every change is recorded so it can be undone. In this demo nothing runs at all." | |
+
+Backup: start on `npm run demo` (dev server) if the build is missing.
+
+## Older plan (full app with server, not built yet)
 Run in demo mode so nothing depends on venue Wi-Fi or hardware:
 `DEMO_MODE=1 DEMO_PROFILE=weak-laptop npm run dev`, browser at the printed localhost address.
 Backup: the screen recording in `docs/demo-recording.mp4` (made in Phase 4).
