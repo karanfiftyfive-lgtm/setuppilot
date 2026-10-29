@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "_note": "Demo mode only: what the fake executor prints for a command. Simulated text, never real output, never a real number.",
+  "scripts": {
+    "default": { "lines": ["Demo mode: simulated."], "delayMs": 400 },
+    "ollama.pull": {
+      "lines": ["Demo mode: simulated download.", "pulling manifest", "pulling model", "verifying", "success"],
+      "delayMs": 1500
+    },
+    "ollama.install": { "lines": ["Demo mode: simulated install.", "Successfully installed"], "delayMs": 1200 }
+  }
+}

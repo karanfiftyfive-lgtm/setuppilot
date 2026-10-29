@@ -22,12 +22,14 @@ const M = [
   ["hygiene: raw U+2028 in a core file", "core/hash.ts", (s) => s + "// x" + String.fromCodePoint(0x2028) + "y"],
   ["hygiene: raw RLO in a data file", "data/glossary.json", (s) => s.replace("{", "{" + String.fromCodePoint(0x202e))],
 ];
+const run = () => { try { execSync("npx vitest run tests/core-open-items-paths.test.ts tests/core-open-items-manifest.test.ts tests/source-hygiene.test.ts", { stdio: "pipe" }); return true; } catch { return false; } };
+// A flaky failure would count as "caught", so the unmutated code must pass first.
+if (!run()) { console.log("BASELINE FAILED: the tests fail without any mutation; nothing checked."); process.exit(1); }
 let caught = 0;
 for (const [name, file, f] of M) {
   const orig = fs.readFileSync(file, "utf8");
   fs.writeFileSync(file, f(orig));
-  let failed = false;
-  try { execSync("npx vitest run tests/core-open-items-paths.test.ts tests/core-open-items-manifest.test.ts tests/source-hygiene.test.ts", { stdio: "pipe" }); } catch { failed = true; }
+  const failed = !run();
   fs.writeFileSync(file, orig);
   if (failed) caught++;
   console.log((failed ? "CAUGHT  " : "MISSED  ") + name);

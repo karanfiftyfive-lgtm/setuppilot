@@ -25,7 +25,7 @@ describe("real mode: step 8 is off until its commands are verified", () => {
         status: "skipped", skipReason: explanations.steps["remote-access"].disabled, commands: [], fileWrite: null, demoLabel: null,
       });
     }
-    expect(explanations.steps["remote-access"].disabled).toMatch(/haven't been checked on a real PC/);
+    expect(explanations.steps["remote-access"].disabled).toMatch(/isn't available yet in this version\. I haven't finished testing it/);
   });
 
   it("leaves step 8 out of the plan hash", () => {

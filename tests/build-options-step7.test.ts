@@ -26,11 +26,11 @@ describe("real mode: step 7 (speed boost) is off too (D42)", () => {
 
   it("shows step 7 as skipped with its plain-language reason on every PC, and runs nothing for it", () => {
     for (const [goal, p] of atLeast(all7, 20, "goal/profile pairs")) {
-      expect(step7(goal, p, SERVER_REAL)).toMatchObject({
-        status: "skipped", skipReason: explanations.steps["speed-boost"].disabled, commands: [], demoLabel: null,
-      });
+      // D43: its own "not needed" reason when that applies, otherwise "not available yet".
+      const reason = step7(goal, p).skipReason ?? explanations.steps["speed-boost"].disabled;
+      expect(step7(goal, p, SERVER_REAL)).toMatchObject({ status: "skipped", skipReason: reason, commands: [], demoLabel: null });
     }
-    expect(explanations.steps["speed-boost"].disabled).toMatch(/^Not available yet in this version/);
+    expect(explanations.steps["speed-boost"].disabled).toMatch(/^Your PC could use the speed boost, but it isn't ready in this version\./);
   });
 
   it("leaves steps 7 and 8 out of the plan hash", () => {
@@ -53,8 +53,10 @@ describe("real mode: step 7 (speed boost) is off too (D42)", () => {
   it("words both 'not available yet' texts the same calm way", () => {
     for (const id of atLeast(["remote-access", "speed-boost"] as const, 2, "steps")) {
       const t = explanations.steps[id].disabled!;
-      expect(t, id).toMatch(/^Not available yet in this version: .+ (hasn't|haven't) been checked on a real PC, so I won't run/);
-      expect(t, id).toMatch(/Your AI still works on this PC/);
+      expect(t, id).toMatch(/in this version\. I haven't finished testing it, so I'm leaving it out\./);
+      expect(t, id).toMatch(/There's nothing to do here\.$/);
+      expect(t, id).toMatch(/Your AI works/i);
+      expect(t, id).not.toMatch(/checked on a real PC/);
       expect(t, id).not.toMatch(/!|\b(warning|danger|error|fail\w*|broken|risk\w*)\b/i);
     }
   });

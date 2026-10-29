@@ -77,9 +77,14 @@ export function buildPlan(
       def.estimatedMinutes = downloadMinutes(rec.model.q4SizeGb, catalog);
     }
     const { osPromptWarning: _ignored, ...text } = explanations.steps[id];
-    // Disabled (not yet verified on a real PC) wins over every other reason.
-    const reason = disabled.has(id) ? (text.disabled ?? null) : skipReason(id, profile, rec, catalog);
-    if (disabled.has(id) && !reason) throw new PlanError(`Step "${id}" has no "disabled" text`);
+    let reason = skipReason(id, profile, rec, catalog);
+    if (disabled.has(id)) {
+      // Disabled (not yet verified on a real PC): always skipped, so it never runs. Step 7 keeps its
+      // own "not needed" reason when that applies, since it's the truthful one (D43); otherwise, and
+      // for step 8 even over its sharing refusal, the "not available yet" text is shown.
+      if (!text.disabled) throw new PlanError(`Step "${id}" has no "disabled" text`);
+      if (!(id === "speed-boost" && reason)) reason = text.disabled;
+    }
     // Skipped steps carry no commands, so they can never be part of an approval.
     const commands = reason ? [] : stepCommands(id, profile, rec).map((c) => renderCommand(c.id, c.params, ctx));
     const file = def.writesFile && !reason ? files[def.writesFile] : undefined;

@@ -2,8 +2,10 @@
 
 - Express binds to `127.0.0.1` only. Never `0.0.0.0`. Reject requests whose Host header is
   not localhost (blocks DNS-rebinding from web pages).
-- `runner.ts` is the only module that spawns processes. It accepts a whitelist command id +
-  typed params, never a raw string. Use `spawn` with an args array and `shell: false`.
+- Only `RealExecutor` (`server/executor/real.ts`) spawns processes; it is the only file that
+  imports `node:child_process` (`tests/spawn-rule.test.ts` scans server/). The runner calls
+  the executor with a verified `RenderedCommand`, never a raw string; the executor uses
+  `spawn` with an args array and `shell: false`.
 - A command runs only if the request carries an approval id that the UI got after showing
   that exact command (or the full list for "Approve all"). No approval, no run.
 - Before running a command that changes the PC, write the intended change to the manifest;

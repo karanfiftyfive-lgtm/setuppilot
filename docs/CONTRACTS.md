@@ -113,6 +113,20 @@ interface Goal {
   modelUse: "chat" | "code" | "any";  // which catalog models suit this goal
   stepIds: StepId[];
 }
+// goalAvailability(goalId, opts: BuildOptions) (core/availability.ts, Phase 2 T5c): for the goal
+// screen. Takes the same BuildOptions as buildPlan, so the note follows the server's real-mode
+// disabledSteps and can't drift from it. Goal descriptions in goals.json never carry the note.
+interface GoalAvailability {
+  goal: GoalId;
+  disabledSteps: StepId[];        // the goal's steps that are in opts.disabledSteps (goal order);
+                                  // [] when opts.demo (demo simulates every step)
+  note: string | null;            // explanations.goalNote.text, filled with goalNote.features for
+                                  // each disabled step that is not `advanced` (step 7 is an
+                                  // optional extra a goal never promises; it shows its own reason).
+                                  // null when there are none, and always null in demo mode.
+                                  // Information only: the goal stays selectable. A disabled
+                                  // non-advanced step with no features text throws.
+}
 ```
 
 ## Step and Plan (core/steps + core/goals -> server, ui)
@@ -204,6 +218,12 @@ interface CommandSpec {
   timeoutSec: number;
   privateOutput?: boolean;        // output is parsed in memory only: never logged, streamed
                                   // to the UI or stored (it can hold the user's other data)
+  output: "log" | "progress";     // T6. log: every line forwarded, capped at 1 MiB per run and
+                                  // 4 KiB per line (past the cap: dropped, truncated = true,
+                                  // the process keeps running). progress: only the latest line
+                                  // is kept, forwarded at most about twice a second, history
+                                  // never stored. "progress": ollama.pull and the winget
+                                  // installs; everything else "log". No per-command code.
 }
 interface RenderedCommand { commandId: CommandId; exe: string; args: string[]; display: string }
 // verifyRendered(cmd, ctx) (core/commands/verify.ts): throws unless cmd is exactly what renderCommand would produce for
@@ -412,7 +432,7 @@ interface ServerConfig {        // deep-frozen
   modelsDrive: string;          // "C:/": must exist at start
   openCodeConfig: Candidate;    // <home>/.config/opencode/opencode.json, confirmed false
   exes: Record<string, Candidate>;  // one per whitelist exe name, absolute candidate paths
-  disabledSteps: StepId[];      // real: ["remote-access"]; demo: []
+  disabledSteps: StepId[];      // real: ["remote-access", "speed-boost"] (D42); demo: []
 }
 // buildConfig(home, mode) -> ServerConfig; loadConfig(deps?) reads the two inputs once.
 // startupCheck(config, fs?): checkRoots(roots), modelsDrive exists, logDir and backups can be
@@ -436,13 +456,76 @@ interface StoredPlan {            // created by POST /api/plan, held in server m
 // refuses (NOT_APPROVED) and voids the approval. Approvals are single-use.
 interface Session { token: string }  // random per server start; required in the
                                      // X-SetupPilot-Token header on every state-changing route
-interface ExecRequest { exe: string; args: string[]; timeoutMs: number }  // exe = absolute path
-interface ExecResult { exitCode: number | null; timedOut: boolean; cancelled: boolean }
+```
+
+## Executor (server/executor/*, T6)
+```ts
+// Takes a verified command only. No caller can supply an exe, a timeout or a pid. The executor
+// calls verifyRendered(cmd, catalog context) itself right before spawning (allowedTags = the
+// catalog tags there, so it checks shape and catalog membership; the runner's own
+// verifyRendered with the manifest's tags stays the check for modelTag) and derives the rest:
+//   exe path  config.exes[spec.exe]: absolute drive path, safe, named <exe>.exe, and
+//             confirmed: true. Otherwise nothing runs (spawnError "refused"). Every candidate
+//             is unconfirmed until the human checks it, so real mode runs nothing until then.
+//   timeout   COMMANDS[cmd.commandId].timeoutSec * 1000.
+//   output    COMMANDS[cmd.commandId].output and .privateOutput.
+//   env       only the names in CHILD_ENV_ALLOWLIST, copied from the server's own env,
+//             matched case-insensitively (Windows env names are). Never API keys, tokens,
+//             SETUPPILOT_* or anything else. VERIFY list (D46):
+//               SystemRoot windir SystemDrive TEMP TMP USERPROFILE HOMEDRIVE HOMEPATH
+//               USERNAME APPDATA LOCALAPPDATA ProgramData ProgramFiles ProgramFiles(x86)
+//               ProgramW6432 CommonProgramFiles CommonProgramFiles(x86) CommonProgramW6432
+//               PATH PATHEXT PROCESSOR_ARCHITECTURE NUMBER_OF_PROCESSORS
+//               HTTP_PROXY HTTPS_PROXY NO_PROXY (and their lower-case forms)
+// Cancel is the AbortSignal (the HTTP route takes a run id only). Only server/executor/real.ts
+// imports node:child_process (a test scans server/ for it).
 interface Executor {
-  run(req: ExecRequest, onLine: (line: string) => void, signal: AbortSignal): Promise<ExecResult>;
+  run(cmd: RenderedCommand, onLine: (line: OutputLine) => void, signal: AbortSignal): Promise<ExecResult>;
 }
-// FakeExecutor (tests + demo mode) and RealExecutor (spawn, shell:false). RealExecutor is
-// constructed only when SETUPPILOT_MODE=real on Windows; demo is the default.
+type OutputLine =
+  | { private: false; text: string }
+  | { private: true; text: PrivateText };  // privateOutput commands only
+// PrivateText: String(), template literals, toJSON() and util.inspect all give "[hidden]";
+// only readPrivate(t) returns the text, for the in-memory parser (D30). Never logged,
+// streamed, stored, or put into any error or detail text.
+interface ExecResult {
+  exitCode: number | null;        // null: never started, or killed
+  timedOut: boolean;
+  cancelled: boolean;
+  spawnError: "refused" | "invalid" | "not-found" | "other" | null;
+                                  // refused: exe path unconfirmed or unsafe. invalid:
+                                  // verifyRendered failed. Either way nothing ran.
+  truncated: boolean;             // "log" output went past the cap
+  killConfirmed: boolean | null;  // null: no kill was needed. false: taskkill's own path is
+                                  // unconfirmed (fell back to child.kill(), direct child only),
+                                  // or the process had not exited 5 s after the kill. Never true
+                                  // after a child.kill() fallback.
+}
+// ExecResult and every error/detail text are built from fixed strings and the exit code only:
+// never from output, public or private.
+// Own-child pids: a private set inside the supervisor, filled only from child.pid of a process
+// it just spawned, removed on exit. Timeout and cancel render proc.killTree with ownChildPids =
+// [that child's pid] (built inside the supervisor), and never after the child has exited.
+// FakeExecutor (tests + demo: scripted lines, exit code, spawn error, hang; injected clock) and
+// RealExecutor (injected spawn in tests; shell: false, windowsHide: true, stdio ignore/pipe/pipe)
+// share one supervisor for timeout, cancel, the 5 s wait after a kill and the output caps.
+// createExecutor(config): RealExecutor only when config.mode === "real" and the platform is
+// win32 (its constructor throws otherwise); FakeExecutor otherwise.
+//
+// outcomeFor(commandId, result) (core, pure) -> { status: "done" | "failed";
+//   code: ErrorCode | null; detail: ExecDetail | null }, detail text in data/explanations.json:
+//   exit 0                        done
+//   spawnError "refused"          failed  COMMAND_FAILED  "exeUnconfirmed": "This program's
+//                                         location hasn't been confirmed on this PC yet."
+//                                         (differs from the generic detail; tested)
+//   spawnError "invalid"/"other"  failed  COMMAND_FAILED  generic "commandFailed" detail
+//   spawnError "not-found"        failed  NO_WINGET when the exe is winget, else COMMAND_FAILED
+//   non-zero exit                 failed  DOWNLOAD_INTERRUPTED for ollama.pull, else
+//                                         COMMAND_FAILED (no invented winget exit codes)
+//   timedOut                      failed  TIMEOUT; killConfirmed false adds "it may still be
+//                                         running"
+//   cancelled                     failed  CANCELLED
+// A non-zero exit may still have changed the PC (e.g. a partial winget install): D46, T12 test.
 ```
 
 ## Re-analyze (core/analyze -> ui)

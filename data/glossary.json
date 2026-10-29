@@ -12,7 +12,7 @@
     "quantization": "Shrinking an AI model so it fits on normal PCs, with a small loss in quality.",
     "Q4": "A common shrunk size for AI models. About a quarter of the original, still good quality.",
     "context": "How much text the AI can keep in mind at once, like the length of its short-term memory.",
-    "token": "A small piece of a word. AI reads and writes in tokens; about 3 tokens make 2 words.",
+    "token": "A short piece of text, often a whole word or part of one, that the AI reads and writes.",
     "tokens per second": "How fast the AI writes. About 5 feels slow, 20 or more feels quick.",
     "Ollama": "A free program that runs AI models on your PC. SetupPilot installs it for you.",
     "llama.cpp": "Another free program for running AI models. Used only for the optional speed boost.",

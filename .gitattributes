@@ -1,0 +1,3 @@
+# Keep LF in the working copy on every machine (overrides core.autocrlf). Mutation patterns in
+# tools/mutation/ and the post-edit checks assume LF; a CRLF checkout would break them.
+* text=auto eol=lf

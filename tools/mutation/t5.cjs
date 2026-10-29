@@ -29,16 +29,18 @@ const M = [
   ["step 8 enabled in real mode", C, sub('const REAL_MODE_DISABLED: StepId[] = ["remote-access", "speed-boost"];', 'const REAL_MODE_DISABLED: StepId[] = ["speed-boost"];')],
   ["step 7 enabled in real mode", C, sub('const REAL_MODE_DISABLED: StepId[] = ["remote-access", "speed-boost"];', 'const REAL_MODE_DISABLED: StepId[] = ["remote-access"];')],
   ["step 7 disabled in demo mode too", C, sub('disabledSteps: mode === "real" ? [...REAL_MODE_DISABLED] : [],', 'disabledSteps: mode === "real" ? [...REAL_MODE_DISABLED] : ["speed-boost"],')],
-  ["step 7 has no 'not available' text", "data/explanations.json", sub('"disabled": "Not available yet in this version: the speed boost', '"disabledX": "Not available yet in this version: the speed boost')],
+  ["step 7 has no 'not available' text", "data/explanations.json", sub('"disabled": "Your PC could use the speed boost', '"disabledX": "Your PC could use the speed boost')],
 ];
+const run = () => { try { execSync("npx vitest run tests/server-config.test.ts tests/build-options-step7.test.ts", { stdio: "pipe" }); return true; } catch { return false; } };
+// A flaky failure would count as "caught", so the unmutated code must pass first.
+if (!run()) { console.log("BASELINE FAILED: the tests fail without any mutation; nothing checked."); process.exit(1); }
 let caught = 0;
 for (const [name, file, f] of M) {
   const orig = fs.readFileSync(file, "utf8");
   let mutated;
   try { mutated = f(orig); } catch (e) { console.log("NOT APPLIED " + name + " (" + e.message.slice(0, 70) + ")"); continue; }
   fs.writeFileSync(file, mutated);
-  let failed = false;
-  try { execSync("npx vitest run tests/server-config.test.ts tests/build-options-step7.test.ts", { stdio: "pipe" }); } catch { failed = true; }
+  const failed = !run();
   fs.writeFileSync(file, orig);
   if (failed) caught++;
   console.log((failed ? "CAUGHT  " : "MISSED  ") + name);

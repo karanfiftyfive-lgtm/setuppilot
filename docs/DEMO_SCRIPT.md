@@ -41,7 +41,18 @@ line; nothing here is assumed. Completed in Phase 2 docs (T19); these are alread
 - [ ] `reg query HKCU\Environment`: confirm the listing format (one `NAME  REG_SZ  value`
       line per variable). Do not paste the output anywhere: it holds your environment variables.
 - [ ] Cancel a running `winget install` from the app: does `taskkill /pid N /t /f` end the
-      installer, including the elevated (UAC) part?
+      installer, including the elevated (UAC) part? Does the app then say the step stopped,
+      or "it may still be running" (killConfirmed false)? Check Task Manager either way.
+- [ ] (T6) Start any winget command from the app in real mode, with winget's `confirmed` path
+      pointing at `%LOCALAPPDATA%\Microsoft\WindowsApps\winget.exe`: does spawning that App
+      Installer alias with `shell: false` work, or fail to start (spawnError)?
+- [ ] (T6) Console output encoding: run `whoami /groups /fo csv /nh`, `reg query
+      HKCU\Environment` and `winget list ...` from the app on a PC with a non-English Windows
+      display language (or a user name with an accented letter): are the lines readable in the
+      log, or garbled (OEM code page instead of UTF-8)? Don't paste the reg output anywhere.
+- [ ] (T6) Child environment allowlist (D46): with the allowlist only, do `winget install`,
+      `ollama pull` and `setx` all work? If one fails, note the error; the missing variable is
+      added by name. Also test behind a proxy if you have one (HTTPS_PROXY set).
 - [ ] OpenCode (D32): after the config is written, open OpenCode and confirm it lists the
       provider "Ollama on this PC (set up by SetupPilot)" and the chosen model. Note the
       OpenCode version, and whether it warns that `provider` is deprecated.

@@ -22,11 +22,11 @@ const M = [
   ["idempotence: re-adds when already there", T, sub('? { kind: "unchanged", config: { ...parsed } }', '? { kind: "added", config: { ...parsed } }')],
   ["idempotence: key order matters", T, sub("isPlainObject(x) ? Object.fromEntries(Object.keys(x).sort()", "isPlainObject(x) ? Object.fromEntries(Object.keys(x)")],
   // disabledSteps
-  ["disabled: step still runs", G, sub("const reason = disabled.has(id) ? (text.disabled ?? null) : skipReason(id, profile, rec, catalog);", "const reason = skipReason(id, profile, rec, catalog);")],
-  ["disabled: sharing refusal wins", G, sub("disabled.has(id) ? (text.disabled ?? null) : skipReason(id, profile, rec, catalog)", "(skipReason(id, profile, rec, catalog) ?? (disabled.has(id) ? (text.disabled ?? null) : null))")],
+  ["disabled: step still runs", G, sub("    if (disabled.has(id)) {", "    if (false) {")],
+  ["disabled: sharing refusal wins", G, sub('if (!(id === "speed-boost" && reason)) reason = text.disabled;', "if (!reason) reason = text.disabled;")],
   ["disabled: required step allowed", G, sub('if (STEP_DEFS[id].required) throw new PlanError', "if (false) throw new PlanError")],
   ["disabled: unknown id allowed", G, sub('if (!Object.hasOwn(STEP_DEFS, id)) throw new PlanError', "if (false) throw new PlanError")],
-  ["disabled: reason text missing", D, sub('"disabled": "Not available yet in this version: the sharing commands', '"disabledX": "Not available yet in this version: the sharing commands')],
+  ["disabled: reason text missing", D, sub('"disabled": "Using your AI from your other devices', '"disabledX": "Using your AI from your other devices')],
   // Demo label and context caveat
   ["demo: label on skipped steps", G, sub("demoLabel: opts.demo && !reason ? explanations.labels.demo : null", "demoLabel: opts.demo ? explanations.labels.demo : null")],
   ["demo: label in real mode", G, sub("demoLabel: opts.demo && !reason ? explanations.labels.demo : null", "demoLabel: explanations.labels.demo")],
@@ -39,14 +39,16 @@ const M = [
   ["tag: leading dash allowed", T, sub("const SAFE_TAG = /^[a-z0-9][a-z0-9._-]*", "const SAFE_TAG = /^[a-z0-9._-][a-z0-9._-]*")],
 ];
 const tests = "tests/toolconfig.test.ts tests/content-hash.test.ts tests/build-options.test.ts tests/honesty.test.ts";
+const run = () => { try { execSync(`npx vitest run ${tests}`, { stdio: "pipe" }); return true; } catch { return false; } };
+// A flaky failure would count as "caught", so the unmutated code must pass first.
+if (!run()) { console.log("BASELINE FAILED: the tests fail without any mutation; nothing checked."); process.exit(1); }
 let caught = 0;
 for (const [name, file, f] of M) {
   const orig = fs.readFileSync(file, "utf8");
   let mutated;
   try { mutated = f(orig); } catch (e) { console.log("NOT APPLIED " + name + " (" + e.message.slice(0, 60) + ")"); continue; }
   fs.writeFileSync(file, mutated);
-  let failed = false;
-  try { execSync(`npx vitest run ${tests}`, { stdio: "pipe" }); } catch { failed = true; }
+  const failed = !run();
   fs.writeFileSync(file, orig);
   if (failed) caught++;
   console.log((failed ? "CAUGHT  " : "MISSED  ") + name);

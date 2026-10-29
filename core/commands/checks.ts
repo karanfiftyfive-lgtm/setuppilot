@@ -8,7 +8,7 @@ export const WINGET_PACKAGES = ["Ollama.Ollama", "Tailscale.Tailscale", "ggml.ll
 
 type CheckInput = Pick<CommandSpec, "id" | "exe" | "args"> & Partial<CommandSpec>;
 const check = (s: CheckInput): CommandSpec =>
-  ({ params: {}, needsAdmin: false, changesPc: false, reverseId: null, timeoutSec: 15, ...s });
+  ({ params: {}, needsAdmin: false, changesPc: false, reverseId: null, timeoutSec: 15, output: "log", ...s });
 
 export const READ_ONLY_CHECKS: readonly CommandSpec[] = [
   // windows-commands/whoami: "whoami {[/user] [/groups] ...} [/fo <format>] [/nh]", csv valid.

@@ -96,6 +96,9 @@ export interface Goal {
   stepIds: StepId[];
 }
 
+/** Goal screen: which of a goal's steps are off in this version, and a plain note (CONTRACTS.md). */
+export interface GoalAvailability { goal: GoalId; disabledSteps: StepId[]; note: string | null }
+
 export type CommandId = string;
 
 export interface StepDef {
@@ -175,7 +178,23 @@ export interface CommandSpec {
   reverseId: CommandId | null;
   timeoutSec: number;
   privateOutput?: boolean;
+  /** log: every line, capped. progress: latest line only, throttled, no history (CONTRACTS.md). */
+  output: "log" | "progress";
 }
+
+/** How one run ended (server/executor). Never carries output text, public or private. */
+export interface ExecResult {
+  exitCode: number | null;
+  timedOut: boolean;
+  cancelled: boolean;
+  spawnError: "refused" | "invalid" | "not-found" | "other" | null;
+  truncated: boolean;
+  killConfirmed: boolean | null;
+}
+/** Keys of data/explanations.json execDetails: fixed plain text, never built from output. */
+export type ExecDetail =
+  | "exeUnconfirmed" | "commandFailed" | "notFound" | "downloadInterrupted" | "timedOut" | "timedOutMayRun" | "cancelled";
+export interface ExecOutcome { status: "done" | "failed"; code: ErrorCode | null; detail: ExecDetail | null }
 
 export interface Approval {
   id: string;

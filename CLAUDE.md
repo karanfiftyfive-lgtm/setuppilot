@@ -57,5 +57,10 @@ Vitest (tests/). Windows first; OS-specific code behind the interface in `server
   backslashes with the Edit/Write tools, not shell heredocs or sed.
   `tests/source-hygiene.test.ts` fails on invisible line breaks or bidi controls.
 - Never delete or overwrite a file until the check that proves it is no longer needed has
-  passed (e.g. a split file is compared with the original first). This folder is not a git
-  repo, so a deleted file cannot be recovered.
+  passed (e.g. a split file is compared with the original first). Use `git diff` against the
+  baseline commit for the comparison; an untracked file still can't be recovered.
+- Send dependent edits one at a time (wait for each result). After any refused edit, re-read
+  the file before the next edit to it.
+- A failed post-edit hook run is unproven until a rerun confirms it: if the failures can't be
+  explained by the edit (e.g. the `whitelist-checks` WhitelistError double load, DECISIONS
+  open item 3), rerun `npx vitest run` before acting on them, and record the occurrence.

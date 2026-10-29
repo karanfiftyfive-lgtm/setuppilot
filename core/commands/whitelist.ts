@@ -14,8 +14,8 @@ export class WhitelistError extends Error {
 const WINGET_FLAGS = ["-e", "--silent", "--accept-source-agreements", "--accept-package-agreements"];
 const TAG = { tag: { kind: "catalogTag" } as ParamRule };
 
-function spec(s: Omit<CommandSpec, "params" | "needsAdmin" | "timeoutSec"> & Partial<CommandSpec>): CommandSpec {
-  return { params: {}, needsAdmin: false, timeoutSec: 120, ...s };
+function spec(s: Omit<CommandSpec, "params" | "needsAdmin" | "timeoutSec" | "output"> & Partial<CommandSpec>): CommandSpec {
+  return { params: {}, needsAdmin: false, timeoutSec: 120, output: "log", ...s };
 }
 
 const LIST: CommandSpec[] = [
@@ -28,13 +28,13 @@ const LIST: CommandSpec[] = [
 
   // Runtime.
   spec({ id: "ollama.install", exe: "winget", args: ["install", "--id", "Ollama.Ollama", ...WINGET_FLAGS],
-    changesPc: true, reverseId: "ollama.uninstall", timeoutSec: 900 }),
+    changesPc: true, reverseId: "ollama.uninstall", timeoutSec: 900, output: "progress" }),
   spec({ id: "ollama.uninstall", exe: "winget", args: ["uninstall", "--id", "Ollama.Ollama", "-e", "--silent"],
     changesPc: true, reverseId: "ollama.install", timeoutSec: 600 }),
 
   // Models. Pull only catalog tags; remove only tags SetupPilot recorded in the manifest.
   spec({ id: "ollama.pull", exe: "ollama", args: ["pull", { param: "tag" }], params: TAG,
-    changesPc: true, reverseId: "ollama.rm", timeoutSec: 7200 }),
+    changesPc: true, reverseId: "ollama.rm", timeoutSec: 7200, output: "progress" }),
   spec({ id: "ollama.rm", exe: "ollama", args: ["rm", { param: "tag" }], params: { tag: { kind: "modelTag" } },
     changesPc: true, reverseId: "ollama.pull", timeoutSec: 120 }),
 
@@ -53,7 +53,7 @@ const LIST: CommandSpec[] = [
   spec({ id: "tailscale.serveStatus", exe: "tailscale", args: ["serve", "status", "--json"],
     changesPc: false, reverseId: null, timeoutSec: 15 }),
   spec({ id: "tailscale.install", exe: "winget", args: ["install", "--id", "Tailscale.Tailscale", ...WINGET_FLAGS],
-    needsAdmin: true, changesPc: true, reverseId: "tailscale.uninstall", timeoutSec: 900 }),
+    needsAdmin: true, changesPc: true, reverseId: "tailscale.uninstall", timeoutSec: 900, output: "progress" }),
   spec({ id: "tailscale.uninstall", exe: "winget", args: ["uninstall", "--id", "Tailscale.Tailscale", "-e", "--silent"],
     needsAdmin: true, changesPc: true, reverseId: "tailscale.install", timeoutSec: 600 }),
   spec({ id: "tailscale.up", exe: "tailscale", args: ["up"], changesPc: true, reverseId: "tailscale.logout", timeoutSec: 600 }),
@@ -68,7 +68,7 @@ const LIST: CommandSpec[] = [
 
   // Speed boost (VERIFY IN PHASE 2: winget id; real path untested until a human runs it).
   spec({ id: "llamacpp.install", exe: "winget", args: ["install", "--id", "ggml.llamacpp", ...WINGET_FLAGS],
-    changesPc: true, reverseId: "llamacpp.uninstall", timeoutSec: 900 }),
+    changesPc: true, reverseId: "llamacpp.uninstall", timeoutSec: 900, output: "progress" }),
   spec({ id: "llamacpp.uninstall", exe: "winget", args: ["uninstall", "--id", "ggml.llamacpp", "-e", "--silent"],
     changesPc: true, reverseId: "llamacpp.install", timeoutSec: 600 }),
 

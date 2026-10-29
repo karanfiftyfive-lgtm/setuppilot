@@ -46,7 +46,7 @@
       "notNeeded": "Your PC doesn't need this. It only helps on a PC with a separate graphics card.",
       "notNeededFull": "Not offered: your graphics card's memory is already used by the AI model, so there is no spare room for the helper.",
       "osPromptWarning": false,
-      "disabled": "Not available yet in this version: the speed boost install hasn't been checked on a real PC, so I won't run it. Your AI still works on this PC without it."
+      "disabled": "Your PC could use the speed boost, but it isn't ready in this version. I haven't finished testing it, so I'm leaving it out. Your AI works without it, just without the extra speed. There's nothing to do here."
     },
     "remote-access": {
       "what": "Installing Tailscale so your other devices can reach this AI.",
@@ -55,7 +55,7 @@
       "signInNote": "A Tailscale window will open. Sign in with your own account. I never see your password.",
       "osPromptWarning": true,
       "refused": "I won't set this up: something on this PC already uses Tailscale sharing, and changing it could break it.",
-      "disabled": "Not available yet in this version: the sharing commands haven't been checked on a real PC, so I won't run them. Your AI still works on this PC."
+      "disabled": "Using your AI from your other devices isn't available yet in this version. I haven't finished testing it, so I'm leaving it out. For now, your AI works on this PC only. There's nothing to do here."
     },
     "connect-coding-tool": {
       "what": "Connecting your coding tool to this AI.",
@@ -132,9 +132,26 @@
   "labels": {
     "demo": "Demo mode: simulated"
   },
+  "execDetails": {
+    "_note": "Fixed detail text per outcome (core/outcome.ts). Never built from a program's output.",
+    "exeUnconfirmed": "This program's location hasn't been confirmed on this PC yet.",
+    "commandFailed": "The program stopped with an error. 'Show technical details' has the full log.",
+    "notFound": "The program wasn't found where it should be on this PC.",
+    "downloadInterrupted": "The download stopped before it finished.",
+    "timedOut": "This took longer than it should, so I stopped it.",
+    "timedOutMayRun": "This took longer than it should. I tried to stop it, but it may still be running.",
+    "cancelled": "You cancelled this step."
+  },
+  "goalNote": {
+    "_note": "Shown on the goal screen in real mode when a goal includes a step that is off in this version (core/availability.ts). Not for advanced extras like the speed boost.",
+    "text": "Not in this version: {features}. For now, it works on this PC only.",
+    "features": {
+      "remote-access": "using your AI from your other devices"
+    }
+  },
   "toolConfig": {
     "_note": "contextNote numbers: toolContext comes from TOOL_USE_MIN_CONTEXT in core/toolconfig.ts (cited there); context is the plan's value.",
-    "contextNote": "Coding tools work best with a bigger conversation memory (context). Ollama's guides for these tools recommend at least {toolContext} tokens; this PC is set to {context}. So letting the AI read and change files by itself (tool use) may not work well on this PC.",
+    "contextNote": "Coding tools work best when the AI can keep a lot in mind at once (context). Ollama's guides for these tools suggest at least {toolContext} tokens; this PC is set to {context} tokens to fit its memory. So letting the AI read and change files on its own may not work well here. You don't need to do anything.",
     "providerName": "Ollama on this PC (set up by SetupPilot)",
     "claudeCodeHeader": [
       "# Use your local AI in Claude Code, in this PowerShell window only.",

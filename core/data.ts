@@ -2,7 +2,7 @@
 import catalogJson from "../data/catalog.json";
 import goalsJson from "../data/goals.json";
 import explanationsJson from "../data/explanations.json";
-import type { Catalog, Goal, StepId, StepText } from "./types";
+import type { Catalog, ExecDetail, Goal, StepId, StepText } from "./types";
 
 export interface Explanations {
   steps: Record<StepId, StepText & { osPromptWarning: boolean }>;
@@ -10,6 +10,8 @@ export interface Explanations {
   tips: { closePrograms: string; addRam: string; addGpu: string; remoteMachine: string };
   weakPc: { title: string; body: string };
   labels: { demo: string };
+  goalNote: { text: string; features: Partial<Record<StepId, string>> };
+  execDetails: Record<ExecDetail, string>;
   toolConfig: { contextNote: string; providerName: string; claudeCodeHeader: string[]; rulesFile: string[] };
 }
 

@@ -46,6 +46,11 @@ function replaceNth(text, find, repl, n) {
   return text.slice(0, idx) + repl + text.slice(idx + find.length);
 }
 
+// A flaky failure would count as "caught", so the unmutated code must pass first.
+if (spawnSync("npx vitest run", { cwd: ROOT, shell: true, stdio: "pipe" }).status !== 0) {
+  console.log("BASELINE FAILED: the tests fail without any mutation; nothing checked.");
+  process.exit(1);
+}
 const results = [];
 for (const [label, rel, find, repl, nthGiven] of M) {
   const file = path.join(ROOT, rel);

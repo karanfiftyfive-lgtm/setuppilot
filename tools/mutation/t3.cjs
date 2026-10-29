@@ -24,12 +24,14 @@ const M = [
   ["verify: extra fields allowed", V, sub(`if (Object.keys(cmd).sort().join(",") !== "args,commandId,display,exe") refuse("unexpected fields");`, ``)],
   ["verify: inherited ids allowed", V, sub(`Object.hasOwn(COMMANDS, cmd.commandId)`, `cmd.commandId in COMMANDS`)],
 ];
+const run = () => { try { execSync("npx vitest run tests/whitelist-checks.test.ts", { stdio: "pipe" }); return true; } catch { return false; } };
+// A flaky failure would count as "caught", so the unmutated code must pass first.
+if (!run()) { console.log("BASELINE FAILED: the tests fail without any mutation; nothing checked."); process.exit(1); }
 let caught = 0;
 for (const [name, file, f] of M) {
   const orig = fs.readFileSync(file, "utf8");
   fs.writeFileSync(file, f(orig));
-  let failed = false;
-  try { execSync("npx vitest run tests/whitelist-checks.test.ts", { stdio: "pipe" }); } catch { failed = true; }
+  const failed = !run();
   fs.writeFileSync(file, orig);
   if (failed) caught++;
   console.log((failed ? "CAUGHT  " : "MISSED  ") + name);

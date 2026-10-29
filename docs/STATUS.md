@@ -1,48 +1,46 @@
 # Status (read this first when resuming)
 
-Last updated: 2026-10-28, end of the first Phase 2 session, after T5 + the step 7 change.
+Last updated: 2026-10-29, second Phase 2 session, after T6 (executor), waiting for the human.
 Keep this file current at the end of every task.
 
-## RESTART HERE (new session)
-**Start Claude Code from inside the `setuppilot/` folder** (not the parent `project-4/`),
-so `.claude/settings.json`, the post-edit hook, the slash commands and the three project
-agents load. The first session started in the parent folder, so none of them loaded.
+## Session start (if Claude Code is restarted)
+Start Claude Code from inside `setuppilot/`, so the settings, the post-edit hook, the slash commands
+and the three project agents load. Then re-run the baseline below before any new task.
 
-**Exact first instruction for the new session** (the human pastes this):
-> Read docs/STATUS.md and CLAUDE.md first. Then run the "First thing to do after restart"
-> checklist in docs/STATUS.md, show me every result, and stop for my go-ahead before T6.
-> Do not start T6.
+## Restart checklist: done 2026-10-29, all passed (accepted by the human)
+a. `winget --version` refused by the deny rules. b. Post-edit hook ran Vitest (results cache
+rewritten during the edit); `core/hash.ts` back to its original bytes (sha256 and `git diff`).
+c. All three agents loaded. d. Beginner-reviewer findings -> fixed in T5b. e. 573 tests, tsc
+clean, 29/14/18/27/25. (One edit slip during item b: see AI_USAGE.md.)
 
-## First thing to do after restart (show the human every result, then stop)
-- [ ] a. **settings.json is active**: try the harmless blocked command `winget --version`
-      (Bash tool) and confirm it is refused by the deny rules. Do not try anything else
-      that changes the system. If it is NOT refused, stop and tell the human.
-- [ ] b. **The post-edit test hook runs**: make a harmless edit in `core/` (e.g. add then
-      remove a blank line at the end of `core/hash.ts`), confirm the hook ran Vitest, and
-      confirm the file is back to its original bytes.
-- [ ] c. **The three agents are loaded**: `safety-reviewer`, `test-writer`,
-      `beginner-reviewer` appear as agent types.
-- [ ] d. **Run the beginner-reviewer** on: the context caveat
-      (`data/explanations.json` `toolConfig.contextNote`, D33), and the step 7 and step 8
-      "not available yet" texts (`steps["speed-boost"].disabled`,
-      `steps["remote-access"].disabled`). Show its findings; change nothing without approval.
-- [ ] e. **Baseline**: `npm test` (expect 573 passing), `npx tsc --noEmit --noUnusedLocals`,
-      and all five mutation checks (expect Phase 1 29/29, T2 14/14, T3 18/18, T4 27/27,
-      T5 25/25). The T4 check takes several minutes; run long checks in the background and
-      don't edit source files while a mutation check runs (it edits files temporarily).
-- [ ] Then **stop** and wait for the human's go-ahead before T6.
+## Baseline now (after T6)
+`npm test`: 663 passing. `npx tsc --noEmit --noUnusedLocals`: clean. Mutation checks: Phase 1
+29/29, T2 14/14, T3 18/18, T4 27/27, T5 25/25, T5b 13/13, T5c 11/11, T5d 5/5, T6 31/31. Every script refuses to
+run if its tests fail on unmutated code. Run long checks in the background and don't edit
+source files while one runs (they edit files temporarily).
+Known flake (DECISIONS open item 3): twice, a hook run after editing
+`tests/step7-reason-and-copy.test.ts` failed the same 27 `whitelist-checks` tests
+(`whitelist.ts` loaded twice). T5d: the hook now starts Vitest from the real path (plausible
+fix, not confirmed). If you see it, re-run once before acting, and note it (CLAUDE.md rule).
 
 ## Where we are
 - **Phase 0** (context files) and **Phase 1** (core/ + tests): closed and approved. Don't redo them.
 - **Phase 2** (server/): plan approved with changes (`docs/DECISIONS.md` D29-D42 and
   `docs/CONTRACTS.md`). Build order T0-T19, one module per task. T0-T5 done and accepted.
-- **Human decisions in the last session**: step 7 (speed boost) is also off in real mode
-  (D42, done); restart now, before T6 (this file); git init + baseline commit will be done
-  by the human, who will say when (until then: compare files before deleting them).
-- **Next task: T6** `server/executor.ts`: Executor interface, FakeExecutor (tests + demo),
-  RealExecutor (absolute exe paths only, `shell: false`, constructed only in real mode),
-  timeouts, cancel via `proc.killTree` with the executor's own child pid only, and the
-  `privateOutput` guard (see obligations below). Needs a /plan-style outline approved first.
+- **Done this session**: restart checklist; git repo with baseline commit `7ee907b` (made by
+  the human; compare with `git diff` before deleting anything); T5b (copy fixes + D43);
+  T5c (goal-screen note D44, first-person copy, `.gitattributes`, baseline guard in every
+  mutation script); T5d (goal note leads with what's missing, caveat promises nothing, hook
+  realpath, D45); T6 executor (D46). The agent never runs git add / commit. At the end of T6
+  `git log` still shows only the baseline `7ee907b` (the human is committing T5b-T6).
+- **Waiting for the human**: review of T6. Don't start T7 until the human says go.
+- **Next task: T7 `server/log.ts`**, only after the human says go: plan first. Owed there:
+  privateOutput lines and proxy credentials never reach the log file (DECISIONS obligations).
+- **T6 layout**: `server/executor.ts` (createExecutor) and `server/executor/{types,output,
+  env,supervise,fake,real}.ts`; `core/outcome.ts` (outcomeFor); `data/demo-output.json`.
+  (Old T6 notes follow.) FakeExecutor (tests + demo), RealExecutor (absolute exe paths only, `shell: false`,
+  constructed only in real mode), how `privateOutput` is enforced, how the own-child PID list
+  is built, timeouts and cancel (`proc.killTree` with the executor's own child pid only).
 
 ## Done
 | Task | What | Tests after | Mutation check |
@@ -54,11 +52,15 @@ agents load. The first session started in the parent folder, so none of them loa
 | T4 | `core/toolconfig.ts` (OpenCode entry, mergeProvider, rules file, Claude Code copy-paste, contentHash), BuildOptions (`disabledSteps`, `demo`), context caveat (coding steps only, information only), honesty scan extended. | 509 | T4 27/27 (2 missed on first run, fixed) |
 | T5 | `server/config.ts`: `modeFor`, `buildConfig` (deep-frozen), `loadConfig` (home read once, only SETUPPILOT_MODE), `startupCheck`, `openCodeWriteMode`; demo data folder separate (D38); exe candidates unconfirmed (D39). | 568 | T5 22/22 (2 missed on first run, fixed) |
 | T5+ | Step 7 off in real mode too (D42): `disabledSteps` `["remote-access", "speed-boost"]`, calm "not available yet" text; tests in `tests/build-options-step7.test.ts`. | 573 | T5 25/25 |
+| T5b | Beginner-reviewer copy fixes (step 7/8 "not available yet", context caveat, glossary "token" as one sentence); step 7 shows "not needed" before "not available yet" (D43; step 8 unchanged). Tests in `tests/step7-reason-and-copy.test.ts`; 3 existing assertions updated (wording / reason order). | 582 | T5b 13/13 (t4/t5 patterns updated) |
+| T5c | `goalAvailability` (`core/availability.ts`, contract first) + `explanations.goalNote`: real-mode note on "remote"/"everything", not "chat"/"code" (step 7 is `advanced`), never in demo (D44). First-person "not available yet" texts, step 7 subject, "There's nothing to do here."; glossary "token" made accurate; `.gitattributes` (LF, no content change); baseline guard in all mutation scripts. 5 assertions updated (listed to the human first). | 589 | T5c 11/11 (1 missed on first run, fixed) |
+| T5d | Goal note "Not in this version: ... For now, it works on this PC only." (data, runtime-swap test); caveat's "chat still works" removed + no-claim test; hook starts Vitest from realpath (not confirmed); CLAUDE.md rule on failed hook runs. 2 assertions updated (listed first). | 591 | T5d 5/5 |
+| T6 | Executor (D46): contract first; `run(cmd, onLine, signal)` with verified commands only; confirmed exe paths only (all unconfirmed: real mode runs nothing yet); shell off, window hidden; own-child pid set; taskkill on own child, child.kill() only if taskkill is unconfirmed (killConfirmed false); timeout/cancel/5 s wait on an injected clock; output policy log/progress; PrivateText + ChildEnv; env allowlist; spawn-import rule; outcomeFor + fixed details. Fake and real share one supervisor (shared test table). | 663 | T6 31/31 (2 missed on first run, fixed) |
 
 Phase 1 mutation check: 29/29. All five checks are re-run after each task.
 
 Mutation scripts: `tools/mutation/` (run from `setuppilot/`):
-`node tools/mutation/phase1.cjs .`, `node tools/mutation/t2.cjs`, `t3.cjs`, `t4.cjs`, `t5.cjs`.
+`node tools/mutation/phase1.cjs .`, `node tools/mutation/t2.cjs`, `t3.cjs`, `t4.cjs`, `t5.cjs`, `t5b.cjs`, `t5c.cjs`, `t5d.cjs`, `t6.cjs`.
 Each mutation is one text replacement in one source file; the named test files must fail;
 the file is restored after each run. Add a new script per task (t6.cjs, ...).
 
@@ -72,11 +74,14 @@ show the report -> T19 docs (DEMO_SCRIPT checklist, AI_USAGE results table, DECI
 AI_USAGE incl. own mistakes) -> stop. Don't start Phase 3.
 
 ## Obligations already promised for later tasks
-- **T6 executor / T7 log**: `privateOutput` lines never reach the log, the event stream,
-  the stored manifest, or any error/detail message; mutation check removing the guard.
-- **T6**: RealExecutor uses absolute exe paths only, `shell: false`, and is constructed only
-  in real mode. FakeExecutor for tests and demo.
-- **T6 / T15**: no request can supply a pid (cancel takes a run id only).
+- **T7 log / T15 events / T8 manifest-store**: `privateOutput` lines AND proxy credentials
+  (child env) never reach the log, the event stream or the stored manifest; one marker test
+  each, plus a mutation removing the guard. (T6 did the executor side: PrivateText, ChildEnv,
+  result and details never carry output.)
+- **T12 runner**: reproduce the retry-after-partial-install sequence (D46) in a test and stop
+  for the human's decision; don't weaken "unknown means keep".
+- **T15**: no request can supply a pid (cancel takes a run id only; T6 executor already takes
+  none).
 - **T10**: graphics detection must not assume NVIDIA. AMD/Intel: `vramGb: null`, manual
   override, and a warning that the tool can't confirm Ollama will use that card. Check
   Ollama's current Windows GPU docs and cite them; if unconfirmed, keep the warning.
@@ -90,11 +95,15 @@ AI_USAGE incl. own mistakes) -> stop. Don't start Phase 3.
   Nothing written in demo mode.
 - **T15**: document in docs/ARCHITECTURE.md how the UI gets the session token (served with
   the same-origin page, sent in a header, never in a URL or log).
-- **Beginner-reviewer** (after restart, checklist item d): context-caveat wording (D33) and
-  the step 7 and step 8 "not available yet" texts.
-
 ## Open items
 - Phase 3 open item 1: vitest upgrade (D29); no `--legacy-peer-deps`; retry only if time.
+- Open item 2 (line endings): fixed in T5c with `.gitattributes`.
+- Open item 3: flaky double load of `whitelist.ts` (seen twice; evidence and a fix to try are
+  in DECISIONS). All mutation scripts now have the baseline guard.
+- Open item 4: caveat "I set this PC to" suggestion (Phase 3 copy pass).
+- Open item 5: third beginner review findings, waiting for the human.
+- UI (Phase 3): the glossary tip for "tokens" must find the singular "token" entry (and must
+  not be taken by the longer "tokens per second" entry).
 - Demo mode on macOS/Linux: the server refuses to start there (the home folder isn't a
   Windows drive path). Decide in Phase 3/4 whether judges need a non-Windows demo.
 
@@ -111,15 +120,17 @@ AI_USAGE incl. own mistakes) -> stop. Don't start Phase 3.
 - Exe locations (`server/config.ts`, all `confirmed: false`): Ollama, Tailscale, winget,
   nvidia-smi, whoami, reg, setx, taskkill, pnputil.
 - Every catalog tag and size (`verified: false` on all 10 models).
+- T6 executor: spawning `winget.exe` through the WindowsApps alias with `shell: false`; the
+  console output encoding (OEM code page vs UTF-8); the exact child env allowlist (D46);
+  `taskkill /t` on an elevated winget child (already listed above, now also: does the app
+  report "may still be running"). Until the exe paths are confirmed, real mode runs nothing.
 
 ## Only the human can do
 - Run the real-install checklist (docs/DEMO_SCRIPT.md) and fill the AI_USAGE.md table.
 - Flip `confirmed` flags in server/config.ts and `verified` flags in data/catalog.json.
 - Approve every `npm install` (settings "ask"); the agent must never run winget, ollama
   pull or tailscale.
-- `git init` + baseline commit (pending; until confirmed, compare files before deleting
-  them; afterwards use `git diff`).
-- Restart Claude Code in `setuppilot/` so project agents, commands and the hook load.
+- Commit T5b (agent doesn't commit unless asked).
 
 ## Working rules (from the human; non-negotiable)
 - /plan first per phase; wait for approval. One module per task; show test results after each.
