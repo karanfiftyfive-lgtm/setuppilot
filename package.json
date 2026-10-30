@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "typecheck:ui": "tsc -p ui/tsconfig.json --noEmit --noUnusedLocals",
     "demo": "vite --config ui/vite.config.ts",
+    "demo:scan": "tsx server/detect/scan-cli.ts",
     "demo:build": "vite build --config ui/vite.config.ts && node tools/check-ui-bundle.cjs",
     "demo:preview": "vite preview --config ui/vite.config.ts",
     "server": "tsx server/index.ts"

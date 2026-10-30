@@ -1,5 +1,7 @@
 node_modules/
 ui/dist/
+# Read-only scan of the developer's own PC (npm run demo:scan): personal, never committed
+ui/src/generated/
 # Local data (the app writes to ~/.setuppilot, outside the repo; never commit a copy)
 .setuppilot/
 logs/

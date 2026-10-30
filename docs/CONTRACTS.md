@@ -48,6 +48,27 @@ interface MachineProfile {
 }
 ```
 
+## Read-only scan for the demo (server/detect/scan.ts, `npm run demo:scan`)
+```ts
+// scanPc(config, deps): Promise<MachineProfile>. Reads only; changes nothing, starts no install,
+// makes no network call. Injected deps (tests use fakes):
+//   memory    os.totalmem/freemem -> ramGb, GiB rounded to 0.1
+//   cpu       os.cpus(): name; threads = logical CPUs; cores = threads (physical count not read)
+//   disk      statfs(config.modelsDrive) -> diskFreeGb (GiB, 0.1)
+//   ollama    installed = the candidate ollama.exe file exists; version null, running false,
+//             models [] (not read)
+//   tools     winget / tailscale = their candidate file exists; tailscaleServe null (unknown)
+//   isAdmin false, internet false: not checked by a read-only scan (never guessed as true)
+//   gpus      readGpuLines(executor): runs ONLY the whitelisted read-only `detect.gpu`
+//             (nvidia-smi) through the executor, so it needs real mode on Windows and a
+//             confirmed nvidia-smi path. Parsed "name, totalMiB, freeMiB" lines become NVIDIA
+//             GpuInfo (vramSource "nvidia-smi"). Anything else (refused, not found, no NVIDIA
+//             card, bad output) becomes one GpuInfo { name: "Graphics card (not read)",
+//             vendor "other", discrete false, vramGb null, vramSource "none" }: never a guess.
+// The CLI writes the profile to ui/src/generated/this-pc.json (gitignored). The demo UI adds
+// it as "This PC (scanned <date>)" if, and only if, the file exists and passes a shape check.
+```
+
 ## Catalog and Model (data/catalog.json -> core/recommend)
 ```ts
 interface Tier {

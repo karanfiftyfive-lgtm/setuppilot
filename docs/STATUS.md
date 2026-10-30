@@ -37,6 +37,22 @@ demo-only browser UI was built instead (section "Demo UI" below). Waiting for th
   env files. No LICENSE: the human hasn't chosen one.
 - Facts for the submission form: `docs/SUBMISSION_FACTS.md`.
 
+## Read-only scan of this PC (2026-10-30, options A + B)
+- `npm run demo:scan` (`server/detect/scan.ts`, `scan-cli.ts`): memory, free disk, processor,
+  OS version, and whether Ollama / winget / Tailscale files exist. Changes nothing, no network.
+  Saves `ui/src/generated/this-pc.json` (gitignored); the demo shows "This PC (scanned <date>)"
+  first. Admin rights and internet are not checked (false, never guessed as yes).
+- Graphics card (B): reads NVIDIA cards with the whitelisted `detect.gpu` (nvidia-smi) through
+  the executor, so it runs only in real mode on Windows with a **confirmed** nvidia-smi path
+  (the human flips `"nvidia-smi"` in `server/config.ts` after checking the file exists).
+  Otherwise "Graphics card (not read)", never a guess. AMD/Intel cards: not read.
+- First real run on the developer's PC: 15.7 GB memory, 223.1 GB free, Intel i5-1135G7,
+  Ollama found, graphics not read (demo mode). Tests 813 (8 new); scan mutations 8/8
+  (`tools/mutation/tscan.cjs`).
+- VERIFY (new): winget showed "not found" because it's a WindowsApps alias that a plain
+  file-exists check may not see; confirm on the test machine. Option C (real installs,
+  T8-T19) is not started: it needs a plan and per-task approval.
+
 ## Phase 3 copy items (from the review, not applied)
 - data/ must-fix (data frozen): test step says "real test question" / "real speed" (D1); the
   small-PC body "It will be quick..." is a speed claim without "estimate" (D2).

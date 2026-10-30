@@ -10,6 +10,7 @@ fast they answer depends on your PC.
 ## Run the demo (browser only, nothing is installed)
 ```bash
 npm install --ignore-scripts
+npm run demo:scan       # optional: read-only scan of THIS PC (memory, disk, processor, Ollama)
 npm run demo            # dev server: open http://127.0.0.1:5173
 # or the production build:
 npm run demo:build      # builds ui/dist and checks the bundle has no server code
@@ -40,7 +41,7 @@ npm run typecheck:ui                             # typecheck the demo UI
 | Manifest and undo logic (uninstall reverses only what SetupPilot changed) | **Real**, tested |
 | Executor safety rules and run log (server side, Phase 2 T6-T7) | **Real code**, tested with fakes; not wired to a server yet |
 | Tests | 801 unit tests, mutation checks on every task |
-| Scanning your PC | **Simulated**: you pick a sample PC |
+| Scanning your PC | **Real, read-only**, after `npm run demo:scan`: memory, disk, processor and whether Ollama is installed; "This PC" appears first in the demo. The graphics card is read only with a confirmed `nvidia-smi` path and `SETUPPILOT_MODE=real`; otherwise it shows "not checked". Without a scan you pick a sample PC. The scan file and any build made after it contain your PC's specs: both are gitignored; don't publish them. |
 | Installs, downloads, settings changes | **Simulated**: labelled output, nothing runs |
 | Speed | **Simulated**: estimates only, never a measured number |
 | The AI's answer | **Simulated**: a fixed sample answer |
