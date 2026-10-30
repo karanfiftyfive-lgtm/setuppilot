@@ -104,6 +104,7 @@ One row per checklist line in docs/DEMO_SCRIPT.md ("Real-install checklist").
 | Scan | First version of the CLI used `__dirname`, which doesn't exist in this ES-module project (`"type": "module"`). | Caught on re-reading before running it. | Uses `import.meta.url` instead. |
 | Scan | A test assertion I wrote was convoluted (`... ? 1 : 1`), and a `readonly` tuple broke the typecheck. | Re-reading the test; `tsc`. | Simplified to "exactly one program started"; typed the table as `FakeScript[]` pairs. |
 | Scan | The real scan reports winget as "not found" on a PC that likely has it: winget is a WindowsApps alias a plain file-exists check may miss. | The first real run on the developer's PC. | Reported honestly, added to the VERIFY list; not "fixed" by guessing. |
+| Redesign | I first put tap-to-explain glossary words (buttons) inside the goal-card buttons: a button inside a button is invalid HTML and breaks keyboard and screen-reader use. | Re-reading the component right after writing it. | Goal descriptions are plain text again; glossary taps stay elsewhere. |
 
 ## What the mutation check found
 The mutation check breaks one rule at a time and expects a test to fail. When a mutation

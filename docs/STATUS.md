@@ -53,6 +53,14 @@ demo-only browser UI was built instead (section "Demo UI" below). Waiting for th
   file-exists check may not see; confirm on the test machine. Option C (real installs,
   T8-T19) is not started: it needs a plan and per-task approval.
 
+## UI redesign (2026-10-30)
+Clearer flow with less text: a stepper on every screen (Start, Goal, Your PC, Setup, Try it,
+Upgrade); icon cards for benefits and goals; the PC as spec chips plus one "best fit" result
+card; setup as a checklist (one row per step, details folded under "What does this step do?");
+the test as a chat; upgrade options as cards; sticky top and bottom bars; light and dark
+themes. Logic (`ui/src/model/`) unchanged apart from new copy and `specChips`; no test
+changed; 813 tests pass; build and bundle check OK. Not checked in a real browser by me.
+
 ## Phase 3 copy items (from the review, not applied)
 - data/ must-fix (data frozen): test step says "real test question" / "real speed" (D1); the
   small-PC body "It will be quick..." is a speed claim without "estimate" (D2).

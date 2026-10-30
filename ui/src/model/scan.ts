@@ -18,6 +18,21 @@ export function goalCards(): GoalCard[] {
 export const recommendFor = (goal: GoalId, profile: MachineProfile): Recommendation =>
   recommend(profile, catalog, goalById(goal).modelUse);
 
+export interface SpecChip { key: "memory" | "disk" | "graphics" | "processor"; value: string }
+
+/** The PC's main facts as short chips. The graphics card is never guessed. */
+export function specChips(p: MachineProfile): SpecChip[] {
+  const card = p.gpus.find((g) => g.discrete);
+  const graphics = p.gpus.some((g) => g.vramSource === "none") ? "Not checked"
+    : card ? `${card.name}, ${card.vramGb ?? "unknown"} GB` : "Built-in only";
+  return [
+    { key: "memory", value: `${p.ramGb.total} GB (${p.ramGb.free} GB free)` },
+    { key: "disk", value: `${p.diskFreeGb} GB` },
+    { key: "graphics", value: graphics },
+    { key: "processor", value: p.cpu.name },
+  ];
+}
+
 export interface ScanView {
   modelName: string;
   why: string;

@@ -1,7 +1,8 @@
 // Plan and simulated setup. "Approve all" runs the waiting steps one after another (simulated);
-// "Review each step" shows Approve / Skip on every card. Nothing is executed.
+// "Review each step" shows Approve / Skip on every row. Nothing is executed.
 import { useEffect, useState } from "react";
 import type { Plan } from "../../../core/types";
+import { Icon } from "../components/Icon";
 import { Layout } from "../components/Layout";
 import { ProgressMap } from "../components/ProgressMap";
 import { StepCard } from "../components/StepCard";
@@ -13,6 +14,7 @@ interface Props { plan: Plan; state: RunState; setState: (s: RunState) => void; 
 export function PlanRun({ plan, state, setState, onBack, onNext }: Props) {
   const [mode, setMode] = useState<"choose" | "all" | "each">("choose");
   const finished = isFinished(plan, state);
+  const cards = stepCards(plan);
 
   useEffect(() => {
     if (mode !== "all") return;
@@ -23,19 +25,23 @@ export function PlanRun({ plan, state, setState, onBack, onNext }: Props) {
   }, [mode, plan, state, setState]);
 
   return (
-    <Layout title={COPY.plan.title} onBack={onBack} onNext={onNext} nextDisabled={!finished}>
-      <p>{COPY.plan.totalTime}: about {plan.totalEstimatedMinutes} minutes.</p>
-      {mode === "choose" && !finished && <p className="info">{COPY.plan.approveAllHint(stepCards(plan).filter((c) => c.osPromptWarning).length)}</p>}
-      {mode === "choose" && !finished && (
-        <div className="actions">
-          <button type="button" onClick={() => setMode("all")}>{COPY.plan.approveAll}</button>
-          <button type="button" className="secondary" onClick={() => setMode("each")}>{COPY.plan.reviewEach}</button>
-        </div>
-      )}
-      <ProgressMap plan={plan} state={state} />
-      {finished && <p className="done" role="status">{COPY.plan.allDone}</p>}
+    <Layout step={3} title={COPY.plan.title} lead={COPY.plan.lead} onBack={onBack} onNext={onNext} nextDisabled={!finished}>
+      <section className="panel run-panel">
+        <p className="run-summary"><Icon name="check" size={18} /> {COPY.plan.stepsLine(plan.steps.length, plan.totalEstimatedMinutes)}</p>
+        <ProgressMap plan={plan} state={state} />
+        {mode === "choose" && !finished && (
+          <>
+            <div className="actions">
+              <button type="button" className="primary big" onClick={() => setMode("all")}>{COPY.plan.approveAll}</button>
+              <button type="button" className="secondary" onClick={() => setMode("each")}>{COPY.plan.reviewEach}</button>
+            </div>
+            <p className="muted small">{COPY.plan.approveAllHint(cards.filter((c) => c.osPromptWarning).length)}</p>
+          </>
+        )}
+        {finished && <p className="done" role="status"><Icon name="check" size={20} /> {COPY.plan.allDone}</p>}
+      </section>
       <ol className="steps">
-        {stepCards(plan).map((step) => (
+        {cards.map((step) => (
           <StepCard
             key={step.id}
             step={step}

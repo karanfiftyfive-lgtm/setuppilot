@@ -6,29 +6,34 @@ export const COPY = {
   appName: "SetupPilot",
   welcome: {
     title: "Your own private AI, set up for you",
+    lead: "Pick what you want. SetupPilot does the rest and explains every step.",
     points: [
-      "Chat and write with an AI that runs on your own PC. Your words stay on your PC.",
-      "No monthly bill for the AI itself, and it works without internet once it is set up.",
-      "You pick a goal and approve each step. SetupPilot explains everything in plain words.",
+      { icon: "lock", title: "Private", text: "Runs on your own PC. Your words stay on your PC." },
+      { icon: "bolt", title: "No monthly bill", text: "No subscription for the AI itself, and it works offline once set up." },
+      { icon: "check", title: "You stay in control", text: "Nothing happens until you approve it, and everything can be undone." },
     ],
     limit:
       "Honest limits: AI models that run on a normal PC are smaller than ChatGPT or Claude, so answers are simpler. How fast it answers depends on your PC.",
     demoNote: "This is a demo. Nothing is installed and nothing on this computer changes.",
     start: "Start",
   },
-  goal: { title: "What do you want to do?", hint: "You can change this later." },
+  goal: { title: "What do you want to do?", hint: "Pick one. You can change it later." },
   scan: {
     title: "Your PC",
-    hint: "In the demo you pick a sample PC. The real app checks your own PC.",
-    pickLabel: "Sample PC",
-    pick: "My pick for this PC",
-    why: "Why",
-    speed: "How fast it should feel",
-    next: "What would unlock a bigger AI",
+    hint: "Here is the best AI for this PC.",
+    pickLabel: "Which PC?",
+    pick: "Best fit for this PC",
+    why: "Why this pick?",
+    speed: "Speed",
+    next: "Want a bigger AI?",
     noNext: "This is already the biggest AI in the list for this goal.",
+    specs: { memory: "Memory", disk: "Free disk", graphics: "Graphics", processor: "Processor" },
   },
   plan: {
-    title: "Your setup plan",
+    title: "Set up your private AI",
+    lead: "Here is everything that will happen. Nothing runs until you approve.",
+    stepsLine: (n: number, minutes: number) => `${n} steps, about ${minutes} minutes (estimate)`,
+    whatHappens: "What does this step do?",
     approveAll: "Approve all",
     reviewEach: "Review each step",
     approve: "Approve",
@@ -45,7 +50,11 @@ export const COPY = {
     totalTime: "Total time (estimate)",
   },
   test: {
-    title: "Test question",
+    title: "Try your AI",
+    lead: "Ask a first question to check that everything works.",
+    ask: "Ask (simulated)",
+    you: "You",
+    ai: "Your AI",
     question: "In one sentence, what can you help me with?",
     answer:
       "(Simulated answer) I can help you write, summarise and answer questions, privately on this PC.",
@@ -53,7 +62,9 @@ export const COPY = {
   },
   reanalyze: {
     title: "My PC changed",
-    button: "My PC changed: check again",
+    lead: "Added memory or a graphics card? Check again to see what a bigger AI would need.",
+    sampleNote: "The demo compares your PC with a sample upgraded PC.",
+    button: "Check again",
     changes: "What changed",
     ladder: "Bigger AIs, and what each one needs",
     tips: "Ways to get more from your AI",
@@ -75,6 +86,8 @@ export const COPY = {
     reply: "(Simulated reply) In the real app, your own AI answers here, on your PC. This demo can't answer for real.",
   },
   nav: { back: "Back", next: "Next" },
+  /** The stepper at the top of every screen, in flow order. */
+  stepper: ["Start", "Goal", "Your PC", "Setup", "Try it", "Upgrade"],
   /** Plain names for the progress map (never the internal step ids). */
   stepNames: {
     "scan-pc": "Check your PC", "choose-model": "Pick your AI", "install-runtime": "Install the AI program",
